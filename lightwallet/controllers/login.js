@@ -6,15 +6,16 @@ define([
     'utils/KeyPair',
     'utils/NodeConnector',
     'utils/xbbcode',
+   'nodes',
     // angular related
     'controllers/dialogPassword',
     'services/SessionData',
     'directives/address'
-], function(angular, Address, CryptoHelpers, KeyPair, NodeConnector, xbbcode) {
+], function(angular, Address, CryptoHelpers, KeyPair, NodeConnector, xbbcode, nodes) {
     var mod = angular.module('walletApp.controllers');
 
-	mod.controller('LoginCtrl', ["$scope", "$localStorage", "$timeout", "$location", "$sce", "$uibModal", "sessionData",
-	        function($scope, $localStorage, $timeout, $location, $sce, $uibModal, sessionData) {
+    mod.controller('LoginCtrl', ["$scope", "$localStorage", "$timeout", "$location", "$sce", "$uibModal", "sessionData",
+            function($scope, $localStorage, $timeout, $location, $sce, $uibModal, sessionData) {
 
         $scope.$on('$locationChangeStart', function( event ) {
             if ($scope.connector) {
@@ -23,12 +24,15 @@ define([
         });
         $scope.connector = undefined;
         $scope.$storage = $localStorage.$default({});
-        $scope.connectionStatus = "connecting";
+        $scope.connectionStatus = "waiting";
         $scope.connectionData = '';
+        $scope.showWallets = false;
         $scope.showAll = false;
         $scope.selectedWallet = '';
         $scope.rememberMe = false;
         $scope.saltConfirmation = '·';
+        $scope.selectedHost = undefined;
+        $scope.hosts = nodes.sort(function() { return (Math.round(Math.random())-0.5); });  
 
         // fix for old testnet accounts
         $.each($scope.$storage.wallets || [], function fixOldWallets(idx, e) {
@@ -46,40 +50,45 @@ define([
             return $sce.trustAsHtml( htmlizedData );
         };
 
-        var connector = NodeConnector();
-        connector.connect(function(){
-            $scope.$apply(function(){
-                $scope.connectionStatus = "checking";
-                $scope.connectionData = '';
-            });
-
-            connector.on('errors', function(name, d) {
-                if (d.message === "NIS_ILLEGAL_STATE_NOT_BOOTED") {
-                    $timeout(function retry(){
-                        connector.requestNodeInfo();
-                    }, 700);
-                    $scope.connectionData = '(nis not booted yet)';
-                } else {
-                    $scope.connectionData = '';
-                    $scope.connectionStatus = "error";
-                    console.log(d);
-                    alert(d.error + " " + d.message);
-                }
-            });
-            connector.on('nodeInfo', function(d) {
+        $scope.connect = function connect() {
+            $scope.connectionStatus = "connecting";
+            sessionData.setNode($scope.selectedHost);
+            var connector = NodeConnector($scope.selectedHost);
+            $scope.hostChosen = true;
+            connector.connect(function(){
                 $scope.$apply(function(){
-                    $scope.connectionStatus = "connected";
-                    $scope.connectionData = d.identity.name;
-                    $scope.showAll = true;
-                    $scope.network = d.metaData.networkId;
-                    $scope.nisPort = d.endpoint.port;
-
-                    sessionData.setNetworkId($scope.network);
-                    sessionData.setNisPort($scope.nisPort);
+                    $scope.connectionStatus = "checking";
+                    $scope.connectionData = '';
                 });
+
+                connector.on('errors', function(name, d) {
+                    if (d.message === "NIS_ILLEGAL_STATE_NOT_BOOTED") {
+                        $timeout(function retry(){
+                            connector.requestNodeInfo();
+                        }, 700);
+                        $scope.connectionData = '(nis not booted yet)';
+                    } else {
+                        $scope.connectionData = '';
+                        $scope.connectionStatus = "error";
+                        console.log(d);
+                        alert(d.error + " " + d.message);
+                    }
+                });
+                connector.on('nodeInfo', function(d) {
+                    $scope.$apply(function(){
+                        $scope.connectionStatus = "connected";
+                        $scope.connectionData = d.identity.name;
+                        $scope.showAll = true;
+                        $scope.network = d.metaData.networkId;
+                        $scope.nisPort = d.endpoint.port;
+
+                        sessionData.setNetworkId($scope.network);
+                        sessionData.setNisPort($scope.nisPort);
+                    });
+                });
+                connector.requestNodeInfo();
             });
-            connector.requestNodeInfo();
-        });
+        };
 
         $scope.displayPasswordDialog = function displayPasswordDialog(wallet, successCb) {
             var modalInstance = $uibModal.open({
@@ -280,7 +289,7 @@ define([
             $scope.resetData();
             $scope.hideAll();
         };
-	}]);
+    }]);
 
     return mod;
 });

@@ -10,13 +10,16 @@ define([
     'services/SessionData'
 ], function(angular, $, CryptoHelpers, KeyPair, TransactionType, convert){
     var mod = angular.module('walletApp.services');
-    mod.factory('Transactions', ['$http', '$location', 'sessionData',
-            function TransactionsFactory($http, $location, sessionData) {
+    mod.factory('Transactions', ['$http', 'sessionData',
+            function TransactionsFactory($http, sessionData) {
         var o = {
         };
 
         var NEM_EPOCH = Date.UTC(2015, 2, 29, 0, 6, 25, 0);
         var CURRENT_NETWORK_ID = sessionData.getNetworkId();
+        var _dummy = document.createElement('a');
+        _dummy.href = sessionData.getNode().uri;
+        var CURRENT_HOSTNAME = _dummy.hostname;
         var CURRENT_NETWORK_VERSION = function(val) {
             if (CURRENT_NETWORK_ID === 104) {
                 return 0x68000000 | val;
@@ -656,7 +659,7 @@ define([
             var obj = {'data':convert.ua2hex(result), 'signature':signature.toString()};
 
             /*
-            $http.post('http://'+$location.host()+':7890/transaction/prepare', entity).then(function (data){
+            $http.post('http://'+CURRENT_HOSTNAME+':7890/transaction/prepare', entity).then(function (data){
                 var serializedTx = data.data;
                 var signature = kp.sign(serializedTx.data);
 
@@ -668,7 +671,7 @@ define([
                 failedCb('prepare', data);
             });
             /*/
-            $http.post('http://'+$location.host()+':'+nisPort+'/transaction/announce', obj).then(function (data){
+            $http.post('http://'+CURRENT_HOSTNAME+':'+nisPort+'/transaction/announce', obj).then(function (data){
                 cb(data);
             }, function(data) {
                 failedCb('announce', data);
@@ -687,7 +690,7 @@ define([
             var obj = {'data':convert.ua2hex(result), 'signature':signature.toString()};
 
             /* leaving this here for testing purposes *
-            $http.post('http://'+$location.host()+':7890/transaction/prepare', entity).then(function (data){
+            $http.post('http://'+CURRENT_HOSTNAME+':7890/transaction/prepare', entity).then(function (data){
                 var serializedTx = data.data;
                 var signature = kp.sign(serializedTx.data);
 
@@ -699,7 +702,7 @@ define([
                 failedCb('prepare', data);
             });
             /*/
-            $http.post('http://'+$location.host()+':'+nisPort+'/transaction/announce', obj).then(function (data){
+            $http.post('http://'+CURRENT_HOSTNAME+':'+nisPort+'/transaction/announce', obj).then(function (data){
                 cb(data);
             }, function(data) {
                 failedCb('announce', data);

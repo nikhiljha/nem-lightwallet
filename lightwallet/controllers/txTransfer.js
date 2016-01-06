@@ -11,8 +11,8 @@ define([
 	var mod = angular.module('walletApp.controllers');
 
 	mod.controller('TxTransferCtrl',
-	    ["$scope", "$localStorage", "$http", "$location", "Transactions", 'walletScope',
-        function($scope, $localStorage, $http, $location, Transactions, walletScope) {
+	    ["$scope", "$localStorage", "$http", "Transactions", 'walletScope',
+        function($scope, $localStorage, $http, Transactions, walletScope) {
             $scope.$storage = $localStorage.$default({'txTransferDefaults':{}});
             $scope.walletScope = walletScope;
             $scope.encryptDisabled = false;
@@ -67,7 +67,9 @@ define([
                 var nisPort = $scope.walletScope.nisPort;
                 var obj = {'params':{'address':recipientAddress}};
                 if (! (recipientAddress in $scope.recipientCache)) {
-                    $http.get('http://'+$location.host()+':'+nisPort+'/account/get', obj).then(function (data){
+                    var _uriParser = document.createElement('a');
+                    _uriParser.href = $scope.walletScope.sessionData.getNode().uri;
+                    $http.get('http://'+_uriParser.hostname+':'+nisPort+'/account/get', obj).then(function (data){
                         $scope.recipientCache[recipientAddress] = data.data.account.publicKey;
                     });
                 }

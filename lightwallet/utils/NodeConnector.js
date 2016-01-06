@@ -1,14 +1,15 @@
 'use strict';
 
 define([
-    '/static/sockjs-0.3.4.js',
-    '/static/stomp.js'
+    '../sockjs-0.3.4.js',
+    '../stomp.js'
 ], function(){
-    return function NodeConnector() {
+    return function NodeConnector(_node) {
         return {
             socket: undefined,
             stompClient: undefined,
             timeoutHandle: undefined,
+			nisNode: _node,
 
             requestNodeInfo: function() {
                 var self = this;
@@ -49,7 +50,7 @@ define([
 
             connect: function(asyncConnectCb) {
                 var self = this;
-                self.socket = new SockJS('/w/messages');
+                self.socket = new SockJS(self.nisNode.uri + '/w/messages');
                 self.stompClient = Stomp.over(self.socket);
                 self.stompClient.debug = undefined;
                 self.stompClient.connect({}, function(frame) {

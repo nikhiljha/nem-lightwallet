@@ -1,10 +1,10 @@
 'use strict';
 
 define([
-    '/static/sockjs-0.3.4.js',
-    '/static/stomp.js'
+    '../sockjs-0.3.4.js',
+    '../stomp.js'
 ], function(){
-    return function Connector(_accountAddress) {
+    return function Connector(_node, _accountAddress) {
         return {
             originalAddress: _accountAddress,
             // this is important, we need upper case when subscribing
@@ -13,6 +13,7 @@ define([
             stompClient: undefined,
             timeoutHandle: undefined,
             alreadyForced: false,
+            nisNode: _node,
 
             subscribeToMultisig: function(address) {
                 var self = this;
@@ -175,7 +176,7 @@ define([
 
             connect: function(asyncConnectCb) {
                 var self = this;
-                self.socket = new SockJS('/w/messages');
+                self.socket = new SockJS(self.nisNode.uri + '/w/messages');
                 self.stompClient = Stomp.over(self.socket);
                 self.stompClient.debug = undefined;
                 self.stompClient.connect({}, function(frame) {

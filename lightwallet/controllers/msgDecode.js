@@ -11,8 +11,8 @@ define([
     var mod = angular.module('walletApp.controllers');
 
     mod.controller('MsgDecodeCtrl',
-    ["$scope", "$localStorage", "$http", "$location", "$timeout", 'walletScope', 'tx',
-    function($scope, $localStorage, $http, $location, $timeout, walletScope, tx) {
+    ["$scope", "$localStorage", "$http", "$timeout", 'walletScope', 'tx',
+    function($scope, $localStorage, $http, $timeout, walletScope, tx) {
         $scope.walletScope = walletScope;
         $scope.tx = tx;
 
@@ -31,7 +31,9 @@ define([
 
         var nisPort = $scope.walletScope.nisPort;
         var obj = {'params':{'address':tx.recipient}};
-        $http.get('http://'+$location.host()+':'+nisPort+'/account/get', obj).then(function (data){
+        var _uriParser = document.createElement('a');
+        _uriParser.href = $scope.walletScope.sessionData.getNode().uri;
+        $http.get('http://'+_uriParser.hostname+':'+nisPort+'/account/get', obj).then(function (data){
             $scope.recipientPublicKey = data.data.account.publicKey;
             $scope.gettingRecipientInfo = false;
 

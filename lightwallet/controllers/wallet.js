@@ -26,7 +26,7 @@ define([
 	mod.controller('WalletCtrl',
 	    ["$scope", "$http", "$location", "$localStorage", "$timeout", "$routeParams", "$uibModal", "sessionData",
         function($scope, $http, $location, $localStorage, $timeout, $routeParams, $uibModal, sessionData) {
-            if (sessionData.getNisPort() === 0 || !sessionData.getNetworkId()) {
+            if (sessionData.getNisPort() === 0 || !sessionData.getNetworkId() || !sessionData.getNode()) {
                 $location.path('/login');
             }
 
@@ -253,7 +253,7 @@ define([
                 $scope.account = elem[0].accounts[0].address;
                 $scope.connectionStatus = "connecting";
 
-                var connector = Connector(elem[0].accounts[0].address);
+                var connector = Connector(sessionData.getNode(), elem[0].accounts[0].address);
                 connector.connect(function(){
                     $scope.$apply(function(){
                         $scope.connectionStatus = "connected";
@@ -448,7 +448,7 @@ define([
        };
     });
 
-    mod.directive('tagdetails', ["$http", "$location", function($http, $location) {
+    mod.directive('tagdetails', ["$http", function($http) {
         return {
             restrict: 'E',
             scope: {
@@ -480,7 +480,10 @@ define([
                 if (!scope.requiresKey && scope.tx.type === TransactionType.Transfer && scope.tx.message && scope.tx.message.type === 2) {
                     var nisPort = scope.$parent.walletScope.nisPort;
                     var obj = {'params':{'address':scope.tx.recipient}};
-                    $http.get('http://'+$location.host()+':'+nisPort+'/account/get', obj).then(function (data){
+                    var _uriParser = document.createElement('a');
+                    _uriParser.href = scope.$parent.walletScope.sessionData.getNode().uri;
+
+                    $http.get('http://'+_uriParser.hostname+':'+nisPort+'/account/get', obj).then(function (data){
                         scope.recipientPublicKey = data.data.account.publicKey;
 
                         var privateKey = CryptoHelpers.decrypt(scope.$parent.walletScope.sessionData.getRememberedKey());
