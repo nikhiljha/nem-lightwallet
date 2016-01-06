@@ -32,6 +32,7 @@ define([
         $scope.rememberMe = false;
         $scope.saltConfirmation = '·';
         $scope.selectedHost = undefined;
+        $scope.customSelectedHost = $scope.$storage.customSelectedHost || '';
         $scope.hosts = nodes.sort(function() { return (Math.round(Math.random())-0.5); });  
 
         // fix for old testnet accounts
@@ -52,8 +53,13 @@ define([
 
         $scope.connect = function connect() {
             $scope.connectionStatus = "connecting";
-            sessionData.setNode($scope.selectedHost);
-            var connector = NodeConnector($scope.selectedHost);
+            $scope.$storage.customSelectedHost = $scope.customSelectedHost;
+            if ($scope.customSelectedHost.length > 0) {
+                sessionData.setNode({uri:$scope.customSelectedHost});
+            } else {
+                sessionData.setNode($scope.selectedHost);
+            }
+            var connector = NodeConnector(sessionData.getNode());
             $scope.hostChosen = true;
             connector.connect(function(){
                 $scope.$apply(function(){

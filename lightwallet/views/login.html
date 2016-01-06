@@ -13,7 +13,7 @@
         <span ng-show="network === 96">Mijin</span>
     </h2>
 
-    <form class="form">
+    <form class="form" name='formnode'>
         <div ng-hide="hostChosen">
             <h3>Choose host:</h3>
             <div class="radio" ng-repeat="host in hosts" ng-class="{'bg-success':$parent.selectedHost === host}">
@@ -24,7 +24,11 @@
                 </label>
             </div>
             <div class="form-group">
-                <button type="submit" class="btn btn-default" ng-click="connect()" ng-disabled="! selectedHost">
+                <label for="nodeAdress">Custom node:</label>
+                <input ng-model="customSelectedHost" class="form-control" name="nodeAddress" id="nodeAddress">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-default" ng-click="connect()" ng-disabled="! selectedHost && !customSelectedHost">
                     Connect</button>
             </div>
         </div>
