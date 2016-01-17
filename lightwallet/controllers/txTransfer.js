@@ -2,20 +2,21 @@
 
 define([
     'definitions',
-	'jquery',
-	'utils/CryptoHelpers',
+    'jquery',
+    'utils/CryptoHelpers',
 
-	'filters/filters',
-	'services/Transactions'
+    'filters/filters',
+    'services/Transactions'
 ], function(angular, $, CryptoHelpers) {
-	var mod = angular.module('walletApp.controllers');
+    var mod = angular.module('walletApp.controllers');
 
-	mod.controller('TxTransferCtrl',
-	    ["$scope", "$localStorage", "$http", "Transactions", 'walletScope',
-        function($scope, $localStorage, $http, Transactions, walletScope) {
-            $scope.$storage = $localStorage.$default({'txTransferDefaults':{}});
+    mod.controller('TxTransferCtrl',
+        ["$scope", "$window", "$http", "Transactions", 'walletScope',
+        function($scope, $window, $http, Transactions, walletScope) {
             $scope.walletScope = walletScope;
             $scope.encryptDisabled = false;
+            $scope.storage = $window.localStorage;
+            $scope.storage.setDefault('txTransferDefaults', {});
 
             // load data from storage
             $scope.common = {
@@ -24,14 +25,14 @@ define([
                 'privatekey': '',
             };
             $scope.txTransferData = {
-                'recipient': $scope.$storage.txTransferDefaults.recipient || '',
-                'amount': $scope.$storage.txTransferDefaults.amount,
-                'fee': $scope.$storage.txTransferDefaults.fee || 0,
+                'recipient': $scope.storage.getObject('txTransferDefaults').recipient || '',
+                'amount': $scope.storage.getObject('txTransferDefaults').amount,
+                'fee': $scope.storage.getObject('txTransferDefaults').fee || 0,
                 'innerFee': 0,
-                'due': $scope.$storage.txTransferDefaults.due || 60,
-                'message': $scope.$storage.txTransferDefaults.message || '',
-                'encryptMessage': $scope.$storage.txTransferDefaults.encryptMessage || false,
-                'isMultisig': ($scope.$storage.txTransferDefaults.isMultisig && walletScope.accountData.meta.cosignatoryOf.length > 0) || false,
+                'due': $scope.storage.getObject('txTransferDefaults').due || 60,
+                'message': $scope.storage.getObject('txTransferDefaults').message || '',
+                'encryptMessage': $scope.storage.getObject('txTransferDefaults').encryptMessage || false,
+                'isMultisig': ($scope.storage.getObject('txTransferDefaults').isMultisig && walletScope.accountData.meta.cosignatoryOf.length > 0) || false,
                 'multisigAccount': walletScope.accountData.meta.cosignatoryOf.length == 0?'':walletScope.accountData.meta.cosignatoryOf[0]
             };
 
@@ -78,13 +79,17 @@ define([
             $scope.ok = function () {
                 // save most recent data
                 // BUG: tx data is saved globally not per wallet...
-                $scope.$storage.txTransferDefaults.recipient = $scope.txTransferData.recipient;
-                $scope.$storage.txTransferDefaults.amount = $scope.txTransferData.amount;
-                $scope.$storage.txTransferDefaults.fee = $scope.txTransferData.fee;
-                $scope.$storage.txTransferDefaults.due = $scope.txTransferData.due;
-                $scope.$storage.txTransferDefaults.message = $scope.txTransferData.message;
-                $scope.$storage.txTransferDefaults.encryptMessage = $scope.txTransferData.encryptMessage;
-                $scope.$storage.txTransferDefaults.isMultisig = $scope.txTransferData.isMultisig;
+                var orig = $scope.storage.getObject('txTransferDefaults');
+                $.extend(orig, {
+                    'recipient':$scope.txTransferData.recipient,
+                    'amount':$scope.txTransferData.amount,
+                    'fee':$scope.txTransferData.fee,
+                    'due':$scope.txTransferData.due,
+                    'message':$scope.txTransferData.message,
+                    'encryptMessage':$scope.txTransferData.encryptMessage,
+                    'isMultisig':$scope.txTransferData.isMultisig,
+                });
+                $scope.storage.setObject('txTransferDefaults', orig);
 
                 var recipientAddress = $scope.txTransferData.recipient.toUpperCase().replace(/-/g, '');
                 $scope.txTransferData.recipientPubKey = $scope.recipientCache[recipientAddress];
@@ -92,7 +97,6 @@ define([
                     $scope.walletScope.displayWarning("Encrypted message selected, but couldn't find public key of a recipient");
                     return;
                 }
-
 
                 var rememberedKey = $scope.walletScope.sessionData.getRememberedKey();
                 if (rememberedKey) {

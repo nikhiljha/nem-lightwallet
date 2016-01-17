@@ -2,19 +2,20 @@
 
 define([
     'definitions',
-	'jquery',
-	'utils/CryptoHelpers',
+    'jquery',
+    'utils/CryptoHelpers',
 
-	'filters/filters',
-	'services/Transactions'
+    'filters/filters',
+    'services/Transactions'
 ], function(angular, $, CryptoHelpers) {
-	var mod = angular.module('walletApp.controllers');
+    var mod = angular.module('walletApp.controllers');
 
-	mod.controller('TxNamespaceCtrl',
-	    ["$scope", "$localStorage", "Transactions", 'walletScope',
-        function($scope, $localStorage, Transactions, walletScope) {
-            $scope.$storage = $localStorage.$default({'txNamespaceDefaults':{}});
+    mod.controller('TxNamespaceCtrl',
+        ["$scope", "$window", "Transactions", 'walletScope',
+        function($scope, $window, Transactions, walletScope) {
             $scope.walletScope = walletScope;
+            $scope.storage = $window.localStorage;
+            $scope.storage.setDefault('txNamespaceDefaults', {});
 
             // begin tracking currently selected account
             $scope._updateCurrentAccount = function() {
@@ -48,8 +49,8 @@ define([
                 'namespaceParent': null,
                 'fee': 0,
                 'innerFee': 0,
-                'due': $scope.$storage.txNamespaceDefaults.due || 60,
-                'isMultisig': ($scope.$storage.txNamespaceDefaults.isMultisig  && walletScope.accountData.meta.cosignatoryOf.length > 0) || false,
+                'due': $scope.storage.getObject('txNamespaceDefaults').due || 60,
+                'isMultisig': ($scope.storage.getObject('txNamespaceDefaults').isMultisig  && walletScope.accountData.meta.cosignatoryOf.length > 0) || false,
                 'multisigAccount': walletScope.accountData.meta.cosignatoryOf.length == 0?'':walletScope.accountData.meta.cosignatoryOf[0]
             };
 
@@ -81,8 +82,12 @@ define([
 
             $scope._updateCurrentAccount();
             $scope.ok = function () {
-                $scope.$storage.txNamespaceDefaults.due = $scope.txNamespaceData.due;
-                $scope.$storage.txNamespaceDefaults.isMultisig = $scope.txNamespaceData.isMultisig;
+                var orig = $scope.storage.getObject('txNamespaceDefaults');
+                $.extend(orig, {
+                    'due': $scope.txNamespaceData.due,
+                    'isMultisig': $scope.txNamespaceData.isMultisig,
+                });
+                $scope.storage.setObject('txNamespaceDefaults', orig);
 
                 var rememberedKey = $scope.walletScope.sessionData.getRememberedKey();
                 if (rememberedKey) {

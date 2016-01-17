@@ -2,19 +2,20 @@
 
 define([
     'definitions',
-	'jquery',
-	'utils/CryptoHelpers',
+    'jquery',
+    'utils/CryptoHelpers',
 
-	'filters/filters',
-	'services/Transactions'
+    'filters/filters',
+    'services/Transactions'
 ], function(angular, $, CryptoHelpers) {
-	var mod = angular.module('walletApp.controllers');
+    var mod = angular.module('walletApp.controllers');
 
-	mod.controller('TxMosaicCtrl',
-	    ["$scope", "$localStorage", "Transactions", 'walletScope',
-        function($scope, $localStorage, Transactions, walletScope) {
-            $scope.$storage = $localStorage.$default({'txMosaicDefaults':{}});
+    mod.controller('TxMosaicCtrl',
+        ["$scope", "$window", "Transactions", 'walletScope',
+        function($scope, $window, Transactions, walletScope) {
             $scope.walletScope = walletScope;
+            $scope.storage = $window.localStorage;
+            $scope.storage.setDefault('txMosaicDefaults', {});
 
             // begin tracking currently selected account and it's mosaics
             $scope._updateCurrentAccount = function() {
@@ -62,13 +63,13 @@ define([
                 'mosaicFee': 50000 * 1000000,
                 'mosaicName': '',
                 'namespaceParent': '',
-                'mosaicDescription': $scope.$storage.txMosaicDefaults.mosaicDescription || '',
+                'mosaicDescription': $scope.storage.getObject('txMosaicDefaults').mosaicDescription || '',
                 'properties': {'initialSupply':0, 'divisibility':0, 'transferable':true, 'supplyMutable':true},
                 'levy':{'mosaic':null, 'address':'', 'feeType':1, 'fee':5},
                 'fee': 0,
                 'innerFee': 0,
-                'due': $scope.$storage.txMosaicDefaults.due || 60,
-                'isMultisig': ($scope.$storage.txMosaicDefaults.isMultisig  && walletScope.accountData.meta.cosignatoryOf.length > 0) || false,
+                'due': $scope.storage.getObject('txMosaicDefaults').due || 60,
+                'isMultisig': ($scope.storage.getObject('txMosaicDefaults').isMultisig  && walletScope.accountData.meta.cosignatoryOf.length > 0) || false,
                 'multisigAccount': walletScope.accountData.meta.cosignatoryOf.length == 0?'':walletScope.accountData.meta.cosignatoryOf[0]
             };
 
@@ -99,8 +100,12 @@ define([
             $scope.updateCurrentAccountMosaics();
 
             $scope.ok = function () {
-                $scope.$storage.txMosaicDefaults.due = $scope.txMosaicData.due;
-                $scope.$storage.txMosaicDefaults.isMultisig = $scope.txMosaicData.isMultisig;
+                var orig = $scope.storage.getObject('txMosaicDefaults');
+                $.extend(orig, {
+                    'due': $scope.txMosaicData.due,
+                    'isMultisig': $scope.txMosaicData.isMultisig,
+                });
+                $scope.storage.setObject('txMosaicDefaults', orig);
 
                 var rememberedKey = $scope.walletScope.sessionData.getRememberedKey();
                 if (rememberedKey) {

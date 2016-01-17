@@ -2,31 +2,31 @@
 
 define([
     'definitions',
-	'jquery',
-	'utils/Address',
-	'utils/CryptoHelpers',
+    'jquery',
+    'utils/Address',
+    'utils/CryptoHelpers',
 
     'filters/filters',
-	'services/Transactions'
+    'services/Transactions'
 ], function(angular, $, Address, CryptoHelpers) {
-	var mod = angular.module('walletApp.controllers');
+    var mod = angular.module('walletApp.controllers');
 
-	mod.controller('TxCosignatureCtrl',
-	    ["$scope", "$localStorage", "Transactions", 'walletScope', 'parent', 'meta',
-        function($scope, $localStorage, Transactions, walletScope, parent, meta) {
-            $scope.$storage = $localStorage.$default({'txCosignDefaults':{}});
+    mod.controller('TxCosignatureCtrl',
+        ["$scope", "$window", "Transactions", 'walletScope', 'parent', 'meta',
+        function($scope, $window, Transactions, walletScope, parent, meta) {
             $scope.walletScope = walletScope;
+            $scope.storage = $window.localStorage;
+            $scope.storage.setDefault('txCosignDefaults', {});
 
             // load data from storage
-            var hasData = $scope.$storage.txCosignDefaults;
             $scope.common = {
                 'requiresKey': $scope.walletScope.sessionData.getRememberedKey() === undefined,
                 'password': '',
                 'privatekey': '',
             };
             $scope.txCosignData = {
-                'fee': hasData ? ($scope.$storage.txCosignDefaults.fee || 0): 0,
-                'due': hasData ? ($scope.$storage.txCosignDefaults.due || 60): 60,
+                'fee': $scope.storage.getObject('txCosignDefaults').fee || 0,
+                'due': $scope.storage.getObject('txCosignDefaults').due || 60,
                 'multisigAccount': parent.otherTrans.signer, // inner tx signer is a multisig account
                 'multisigAccountAddress': Address.toAddress(parent.otherTrans.signer, $scope.walletScope.networkId),
                 'hash': meta.innerHash.data, // hash of an inner tx is needed
@@ -38,8 +38,12 @@ define([
 
             $scope.ok = function () {
                 // save most recent data
-                $scope.$storage.txCosignDefaults.fee = $scope.txCosignData.fee;
-                $scope.$storage.txCosignDefaults.due = $scope.txCosignData.due;
+                var orig = $scope.storage.getObject('txCosignDefaults')
+                $.extend(orig, {
+                    'fee':$scope.txCosignData.fee,
+                    'due':$scope.txCosignData.due
+                });
+                $scope.storage.setObject('txCosignDefaults', orig);
 
                 var rememberedKey = $scope.walletScope.sessionData.getRememberedKey();
                 if (rememberedKey) {

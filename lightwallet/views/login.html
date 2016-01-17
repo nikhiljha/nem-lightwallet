@@ -35,9 +35,9 @@
     </form>
     <div ng-show="hostChosen">
         <form class="form">
-            <div ng-show="showAll && $storage.wallets">
+            <div ng-show="showAll && storageWallets">
                 <h3>Choose wallet:</h3>
-                    <div class="radio" ng-repeat="wallet in $storage.wallets | filter:filterNetwork" ng-class="{'bg-success':$parent.selectedWallet === wallet}">
+                    <div class="radio" ng-repeat="wallet in storageWallets | filter:filterNetwork" ng-class="{'bg-success':$parent.selectedWallet === wallet}">
                         <label>
                             <!-- ng-repeat creates a scope, so we need a $parent here -->
                             <input type="radio" name="walletName" ng-model="$parent.selectedWallet" ng-value="wallet">
@@ -86,7 +86,7 @@
 
         <div class="animated-layer" ng-hide="!showAll || addPrivatekeyWalletHidden">
             <form name="formpriv1">
-                <p ng-hide="$storage.wallets">Seems you don't have wallet yet, please create one.</p>
+                <p ng-hide="storageWallets">Seems you don't have wallet yet, please create one.</p>
                 <p>Wallet data is saved locally in your Local Storage <a href ng-click="localStorageHelpVisible=!localStorageHelpVisible">[learn more]</a>
                     <a href="http://www.w3schools.com/html/html5_webstorage.asp" rel="nofollow">[external information]</a></p>
                 <p class="bg-danger">Privatekey wallet requires entering private key every time, it should be used only for testing purposes</p>
@@ -180,7 +180,7 @@
 
         <div class="animated-layer" ng-hide="!showAll || addEncWalletHidden">
             <form name="formpriv4">
-                <p ng-hide="$storage.wallets">Seems you don't have wallet yet, please create one.</p>
+                <p ng-hide="storageWallets">Seems you don't have wallet yet, please create one.</p>
                 <p>Encrypted private key is saved locally in your Local Storage <a href ng-click="localStorageHelpVisible=!localStorageHelpVisible">[learn more]</a>
                     <a href="http://www.w3schools.com/html/html5_webstorage.asp" rel="nofollow">[external information]</a></p>
                 <p class="animated-layer" ng-show="localStorageHelpVisible">

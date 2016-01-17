@@ -2,17 +2,17 @@
 
 define([
     'definitions',
-	'jquery',
-	'utils/CryptoHelpers',
-	'utils/KeyPair',
+    'jquery',
+    'utils/CryptoHelpers',
+    'utils/KeyPair',
 
-	'filters/filters',
+    'filters/filters',
 ], function(angular, $, CryptoHelpers, KeyPair) {
     var mod = angular.module('walletApp.controllers');
 
     mod.controller('MsgDecodeCtrl',
-    ["$scope", "$localStorage", "$http", "$timeout", 'walletScope', 'tx',
-    function($scope, $localStorage, $http, $timeout, walletScope, tx) {
+    ["$scope", "$http", "$timeout", 'walletScope', 'tx',
+    function($scope, $http, $timeout, walletScope, tx) {
         $scope.walletScope = walletScope;
         $scope.tx = tx;
 

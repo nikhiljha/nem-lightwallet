@@ -14,16 +14,17 @@ define([
 ], function(angular, Address, CryptoHelpers, KeyPair, NodeConnector, xbbcode, nodes) {
     var mod = angular.module('walletApp.controllers');
 
-    mod.controller('LoginCtrl', ["$scope", "$localStorage", "$timeout", "$location", "$sce", "$uibModal", "sessionData",
-            function($scope, $localStorage, $timeout, $location, $sce, $uibModal, sessionData) {
+    mod.controller('LoginCtrl', ["$scope", "$window", "$timeout", "$location", "$sce", "$uibModal", "sessionData",
+            function($scope, $window, $timeout, $location, $sce, $uibModal, sessionData) {
 
         $scope.$on('$locationChangeStart', function( event ) {
             if ($scope.connector) {
                 $scope.connector.close();
             }
         });
+        $scope.storage = $window.localStorage;
+
         $scope.connector = undefined;
-        $scope.$storage = $localStorage.$default({});
         $scope.connectionStatus = "waiting";
         $scope.connectionData = '';
         $scope.showWallets = false;
@@ -32,15 +33,22 @@ define([
         $scope.rememberMe = false;
         $scope.saltConfirmation = '·';
         $scope.selectedHost = undefined;
-        $scope.customSelectedHost = $scope.$storage.customSelectedHost || '';
+        $scope.customSelectedHost = $scope.storage.getObject('customSelectedHost') || '';
         $scope.hosts = nodes.sort(function() { return (Math.round(Math.random())-0.5); });  
 
+        $scope.setWallets = function setWallets(wallets) {
+            $scope.storage.setObject('wallets', wallets);
+            $scope.storageWallets = wallets;
+        };
+
+        $scope.storageWallets = $scope.storage.getObject('wallets') || [];
         // fix for old testnet accounts
-        $.each($scope.$storage.wallets || [], function fixOldWallets(idx, e) {
+        $.each($scope.storageWallets, function fixOldWallets(idx, e) {
             if (e.accounts[0].network === undefined) {
                 e.accounts[0].network = -104;
             }
         });
+        $scope.setWallets($scope.storageWallets);
 
         $scope.xbbcoded = function xbbcoded(data) {
             var htmlizedData = xbbcode.process({
@@ -53,7 +61,7 @@ define([
 
         $scope.connect = function connect() {
             $scope.connectionStatus = "connecting";
-            $scope.$storage.customSelectedHost = $scope.customSelectedHost;
+            $scope.storage.setObject('customSelectedHost', $scope.customSelectedHost);
             if ($scope.customSelectedHost.length > 0) {
                 sessionData.setNode({uri:$scope.customSelectedHost});
             } else {
@@ -139,11 +147,11 @@ define([
             });
 
             modalInstance.result.then(function displayPasswordDialogSuccess(priv) {
-                var temp = $scope.$storage.wallets;
-                $scope.$storage.wallets = $.grep(temp, function(elem){
+                var temp = $scope.storageWallets;
+                $scope.setWallets($.grep(temp, function(elem){
                     //console.log(elem === wallet, elem, wallet);
                     return elem !== wallet;
-                });
+                }));
             }, function displayPasswordDialogDismiss() {
             });
         };
@@ -216,7 +224,7 @@ define([
         {
             $scope.dummy.accounts[0].brain = false;
             $scope.dummy.accounts[0].network = $scope.network;
-            $localStorage.wallets = ($localStorage.wallets || []).concat($scope.dummy);
+            $scope.setWallets( $scope.storageWallets.concat($scope.dummy) );
             $scope.resetData();
             $scope.hideAll();
         };
@@ -236,7 +244,7 @@ define([
                 $scope.dummy.accounts[0].network = $scope.network;
                 delete $scope.dummy.accounts[0].password;
 
-                $localStorage.wallets = ($localStorage.wallets || []).concat($scope.dummy);
+                $scope.setWallets( $scope.storageWallets.concat($scope.dummy) );
                 $scope.resetData();
                 $scope.hideAll();
                 $scope.generatingInProgress = false;
@@ -261,7 +269,7 @@ define([
                 $scope.dummy.accounts[0].network = $scope.network;
                 delete $scope.dummy.accounts[0].password;
 
-                $localStorage.wallets = ($localStorage.wallets || []).concat($scope.dummy);
+                $scope.setWallets( $scope.storageWallets.concat($scope.dummy) );
                 $scope.resetData();
                 $scope.hideAll();
                 $scope.generatingInProgress = false;
@@ -291,7 +299,7 @@ define([
             delete $scope.dummy.accounts[0].password;
             delete $scope.dummy.privatekey;
 
-            $localStorage.wallets = ($localStorage.wallets || []).concat($scope.dummy);
+            $scope.setWallets( $scope.storageWallets.concat($scope.dummy) );
             $scope.resetData();
             $scope.hideAll();
         };

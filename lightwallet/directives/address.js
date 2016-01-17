@@ -32,13 +32,13 @@ define([
                         return false;
                     }
 
-                    var accounts = scope.$storage.wallets;
+                    var accounts = scope.storage.getObject('wallets');
                     if (! accounts) {
                         return true;
                     }
 
                     // FOR now skip scope.network, and just compare all existing names
-                    var elem = $.grep(scope.$storage.wallets, function(w){ return w.name === modelValue; });
+                    var elem = $.grep(scope.storage.getObject('wallets'), function(w){ return w.name === modelValue; });
                     return elem.length === 0;
                 };
             }

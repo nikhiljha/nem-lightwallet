@@ -2,19 +2,20 @@
 
 define([
     'definitions',
-	'jquery',
-	'utils/CryptoHelpers',
+    'jquery',
+    'utils/CryptoHelpers',
 
-	'filters/filters',
-	'services/Transactions'
+    'filters/filters',
+    'services/Transactions'
 ], function(angular, $, CryptoHelpers) {
-	var mod = angular.module('walletApp.controllers');
+    var mod = angular.module('walletApp.controllers');
 
-	mod.controller('TxMosaicSupplyCtrl',
-	    ["$scope", "$localStorage", "Transactions", 'walletScope',
-        function($scope, $localStorage, Transactions, walletScope) {
-            $scope.$storage = $localStorage.$default({'txMosaicSupplyDefaults':{}});
+    mod.controller('TxMosaicSupplyCtrl',
+        ["$scope", "$window", "Transactions", 'walletScope',
+        function($scope, $window, Transactions, walletScope) {
             $scope.walletScope = walletScope;
+            $scope.storage = $window.localStorage;
+            $scope.storage.setDefault('txMosaicSupplyDefaults', {});
 
             // begin tracking currently selected account and it's mosaics
             $scope._updateCurrentAccount = function() {
@@ -54,8 +55,8 @@ define([
                 'delta': 0,
                 'fee': 0,
                 'innerFee': 0,
-                'due': $scope.$storage.txMosaicSupplyDefaults.due || 60,
-                'isMultisig': ($scope.$storage.txMosaicSupplyDefaults.isMultisig && walletScope.accountData.meta.cosignatoryOf.length > 0) || false,
+                'due': $scope.storage.getObject('txMosaicSupplyDefaults').due || 60,
+                'isMultisig': ($scope.storage.getObject('txMosaicSupplyDefaults').isMultisig && walletScope.accountData.meta.cosignatoryOf.length > 0) || false,
                 'multisigAccount': walletScope.accountData.meta.cosignatoryOf.length == 0?'':walletScope.accountData.meta.cosignatoryOf[0]
             };
 
@@ -80,8 +81,12 @@ define([
             $scope.updateCurrentAccountMosaics();
 
             $scope.ok = function () {
-                $scope.$storage.txMosaicSupplyDefaults.due = $scope.txMosaicSupplyData.due;
-                $scope.$storage.txMosaicSupplyDefaults.isMultisig = $scope.txMosaicSupplyData.isMultisig;
+                var orig = $scope.storage.getObject('txMosaicSupplyDefaults');
+                $.extend(orig, {
+                    'due': $scope.txMosaicSupplyData.due,
+                    'isMultisig': $scope.txMosaicSupplyData.isMultisig,
+                });
+                $scope.storage.setObject('txMosaicSupplyDefaults', orig);
 
                 var rememberedKey = $scope.walletScope.sessionData.getRememberedKey();
                 if (rememberedKey) {

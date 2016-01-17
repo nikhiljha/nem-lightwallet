@@ -2,11 +2,11 @@
 
 define([
     'definitions',
-	'jquery',
-	'utils/Connector',
-	'utils/CryptoHelpers',
+    'jquery',
+    'utils/Connector',
+    'utils/CryptoHelpers',
     'utils/KeyPair',
-	'utils/TransactionType',
+    'utils/TransactionType',
     // angular related
     'controllers/dialogWarning',
     'controllers/txTransfer',
@@ -17,17 +17,18 @@ define([
     'controllers/txCosignature',
     'controllers/txDetails',
     'controllers/msgDecode',
-	'filters/filters',
+    'filters/filters',
     'services/Transactions',
     'services/SessionData'
 ], function(angular, $, Connector, CryptoHelpers, KeyPair, TransactionType) {
-	var mod = angular.module('walletApp.controllers');
+    var mod = angular.module('walletApp.controllers');
 
-	mod.controller('WalletCtrl',
-	    ["$scope", "$http", "$location", "$localStorage", "$timeout", "$routeParams", "$uibModal", "sessionData",
-        function($scope, $http, $location, $localStorage, $timeout, $routeParams, $uibModal, sessionData) {
+    mod.controller('WalletCtrl',
+        ["$scope", "$http", "$location", "$window", "$timeout", "$routeParams", "$uibModal", "sessionData",
+        function($scope, $http, $location, $window, $timeout, $routeParams, $uibModal, sessionData) {
             if (sessionData.getNisPort() === 0 || !sessionData.getNetworkId() || !sessionData.getNode()) {
                 $location.path('/login');
+				return;
             }
 
             $scope.$on('$locationChangeStart', function( event ) {
@@ -37,9 +38,10 @@ define([
                 }
             });
             $scope.connector = undefined;
-            $scope.$storage = $localStorage.$default({});
-            $scope.$storage.txTransferDefaults = $scope.$storage.txTransferDefaults || {};
-            var elem = $.grep($scope.$storage.wallets, function(w){ return w.name == $routeParams.walletName; });
+            $scope.storage = $window.localStorage;
+            $scope.storage.setDefault('txTransferDefaults', {});
+            var elem = $.grep($scope.storage.getObject('wallets'), function(w){ return w.name == $routeParams.walletName; });
+
             $scope.walletAccount = elem.length == 1 ? elem[0].accounts[0] : null;
             $scope.nisPort = sessionData.getNisPort();
             $scope.networkId = sessionData.getNetworkId();
@@ -361,7 +363,7 @@ define([
                             if (tx.meta.height < blockHeight.height) {
                                 cleanedTransactions.push(tx);
                             } else {
-                                console.log("OK, ", blockHeight, "removed tx: ", tx);
+                                //console.log("OK, ", blockHeight, "removed tx: ", tx);
                             }
                         });
                         $scope.$apply(function(){

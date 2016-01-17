@@ -2,20 +2,21 @@
 
 define([
     'definitions',
-	'jquery',
-	'utils/CryptoHelpers',
+    'jquery',
+    'utils/CryptoHelpers',
 
-	'filters/filters',
-	'services/Transactions'
+    'filters/filters',
+    'services/Transactions'
 ], function(angular, $, CryptoHelpers) {
-	var mod = angular.module('walletApp.controllers');
+    var mod = angular.module('walletApp.controllers');
 
-	mod.controller('TxTransferV2Ctrl',
-	    ["$scope", "$localStorage", "Transactions", 'walletScope',
-        function($scope, $localStorage, Transactions, walletScope) {
-            $scope.$storage = $localStorage.$default({'txTransfer2Defaults':{}});
+    mod.controller('TxTransferV2Ctrl',
+        ["$scope", "$window", "Transactions", 'walletScope',
+        function($scope, $window, Transactions, walletScope) {
             $scope.walletScope = walletScope;
             $scope.counter = 1;
+            $scope.storage = $window.localStorage;
+            $scope.storage.setDefault('txTransfer2Defaults', {});
 
             // begin tracking currently selected account and it's mosaics
             $scope._updateCurrentAccount = function() {
@@ -71,14 +72,14 @@ define([
                 'privatekey': '',
             };
             $scope.txTransferV2Data = {
-                'recipient': $scope.$storage.txTransfer2Defaults.recipient || '',
-                'multiplier': $scope.$storage.txTransfer2Defaults.multiplier || 1,
+                'recipient': $scope.storage.getObject('txTransfer2Defaults').recipient || '',
+                'multiplier': $scope.storage.getObject('txTransfer2Defaults').multiplier || 1,
                 'amount': 0,
-                'fee': $scope.$storage.txTransfer2Defaults.fee || 0,
+                'fee': $scope.storage.getObject('txTransfer2Defaults').fee || 0,
                 'innerFee': 0,
-                'due': $scope.$storage.txTransfer2Defaults.due || 60,
-                'message': $scope.$storage.txTransfer2Defaults.message || '',
-                'isMultisig': ($scope.$storage.txTransfer2Defaults.isMultisig && walletScope.accountData.meta.cosignatoryOf.length > 0) || false,
+                'due': $scope.storage.getObject('txTransfer2Defaults').due || 60,
+                'message': $scope.storage.getObject('txTransfer2Defaults').message || '',
+                'isMultisig': ($scope.storage.getObject('txTransfer2Defaults').isMultisig && walletScope.accountData.meta.cosignatoryOf.length > 0) || false,
                 'multisigAccount': walletScope.accountData.meta.cosignatoryOf.length == 0?'':walletScope.accountData.meta.cosignatoryOf[0],
                 'mosaics': [ {'mosaicId':{'namespaceId':'nem', 'name':'xem'}, 'quantity':0, 'gid':'mos_id_0'} ]
             };
@@ -109,12 +110,16 @@ define([
             $scope.ok = function () {
                 // save most recent data
                 // BUG: tx data is saved globally not per wallet...
-                $scope.$storage.txTransfer2Defaults.recipient = $scope.txTransferV2Data.recipient;
-                $scope.$storage.txTransfer2Defaults.multiplier = $scope.txTransferV2Data.multiplier;
-                $scope.$storage.txTransfer2Defaults.fee = $scope.txTransferV2Data.fee;
-                $scope.$storage.txTransfer2Defaults.due = $scope.txTransferV2Data.due;
-                $scope.$storage.txTransfer2Defaults.message = $scope.txTransferV2Data.message;
-                $scope.$storage.txTransfer2Defaults.isMultisig = $scope.txTransferV2Data.isMultisig;
+                var orig = $scope.storage.getObject('txTransfer2Defaults');
+                $.extend(orig, {
+                    'recipient': $scope.txTransferV2Data.recipient,
+                    'multiplier': $scope.txTransferV2Data.multiplier,
+                    'fee': $scope.txTransferV2Data.fee,
+                    'due': $scope.txTransferV2Data.due,
+                    'message': $scope.txTransferV2Data.message,
+                    'isMultisig': $scope.txTransferV2Data.isMultisig,
+                });
+                $scope.storage.setObject('txTransfer2Defaults', orig);
                 //
 
                 var rememberedKey = $scope.walletScope.sessionData.getRememberedKey();

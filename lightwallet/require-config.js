@@ -15,8 +15,7 @@ require.config({
 		angularAnimate: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-animate.min',
 		angularRoute: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route.min',
 		angularSanitize: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-sanitize.min',
-		angularUib: 'https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.14.3/ui-bootstrap.min',
-		ngStorage: 'https://cdnjs.cloudflare.com/ajax/libs/ngStorage/0.3.9/ngStorage.min'
+		angularUib: 'https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.14.3/ui-bootstrap.min'
 	},
 	shim: {
 		'angular' : {'exports' : 'angular'},
@@ -24,7 +23,6 @@ require.config({
 		'angularAnimate': ['angular'],
 		'angularSanitize': ['angular'],
 		'angularUib': ['angular', 'bootstrap'],
-		'ngStorage': ['angular'],
 		'bootstrap' : ['jquery'],
 		'crypto-js/core': {'exports': 'CryptoJS'},
 		'crypto-js/x64-core': {'exports': 'CryptoJS.x64', deps:['crypto-js/core']},
