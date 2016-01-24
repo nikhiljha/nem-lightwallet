@@ -7,9 +7,6 @@ define([
 	'controllers/login',
 	'controllers/wallet'
 ], function(_, angular, angularRoute, loginView, walletView) {
-    //var ctrls = angular.module('walletApp.controllers', ['ngRoute', 'ngStorage']);
-    //var app = angular.module('walletApp', ['ngRoute', 'walletApp.loginView','walletApp.walletView']);
-    //var app = angular.module('walletApp', ['ngRoute', 'walletApp.controllers']);
     var app = angular.module('walletApp');
 
     app.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
