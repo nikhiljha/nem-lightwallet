@@ -10,7 +10,7 @@ define([
     var app = angular.module('walletApp');
 
     app.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
-        $locationProvider.html5Mode(true);
+        $locationProvider.html5Mode(false).hashPrefix('!');
 
         $routeProvider
             .when('/login', {

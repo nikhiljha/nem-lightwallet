@@ -1,5 +1,10 @@
 'use strict';
 
+var pathArray = location.pathname.split("/");
+pathArray.splice(pathArray.length-1, 1)
+pathArray.push("");
+var filepath = pathArray.join("/");
+
 require.config({
     packages: [
         {
@@ -43,14 +48,15 @@ require.config({
 	priority: [
 		"angular"
 	],
-	baseUrl: '/lightwallet/',
+	baseUrl: filepath,
 });
 
 require([
     'jquery',
 	'angular',
 	'walletApp',
-	'bootstrap'
+	'bootstrap',
+	'templates'
 	], function($, angular, app) {
 		var $html = angular.element(document.getElementsByTagName('html')[0]);
 		angular.element().ready(function() {
