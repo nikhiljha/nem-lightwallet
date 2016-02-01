@@ -31,7 +31,7 @@
         </div>
         <div class="form-group"  ng-class="{'has-error':formtransfer.recipient.$error.addressField}">
             <label for="recipient">Recipient's address</label>
-            <input type="text" class="form-control" ng-model="txTransferData.recipient" name="recipient" id="recipient" placeholder="TBLOOD-PLWOWM-Z2TARX-4RFPOS-OWLULH-XMROBN-2WXI" address-field>
+            <input autofocus="autofocus" type="text" class="form-control" ng-model="txTransferData.recipient" name="recipient" id="recipient" placeholder="TBLOOD-PLWOWM-Z2TARX-4RFPOS-OWLULH-XMROBN-2WXI" address-field>
             <span ng-show="formtransfer.recipient.$error.addressField">Not a valid address</span>
         </div>
         <div class="form-group">
@@ -66,6 +66,6 @@
 </div>
 <div class="modal-footer">
     <span ng-show="invalidKeyOrPassword" class="text-danger glyphicon glyphicon-exclamation-sign"></span>
-    <button class="btn btn-primary" type="button" ng-disabled="common.requiresKey && common.privatekey.length === 0 && common.password.length === 0" ng-click="ok()">Send</button>
+    <button class="btn btn-primary" type="button" ng-disabled="okPressed || common.requiresKey && common.privatekey.length === 0 && common.password.length === 0" ng-click="ok()">Send</button>
     <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
 </div>

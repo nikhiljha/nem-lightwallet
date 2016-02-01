@@ -11,8 +11,8 @@ define([
     var mod = angular.module('walletApp.controllers');
 
     mod.controller('TxMosaicSupplyCtrl',
-        ["$scope", "$window", "Transactions", 'walletScope',
-        function($scope, $window, Transactions, walletScope) {
+        ["$scope", "$window", "$timeout", "Transactions", 'walletScope',
+        function($scope, $window, $timeout, Transactions, walletScope) {
             $scope.walletScope = walletScope;
             $scope.storage = $window.localStorage;
             $scope.storage.setDefault('txMosaicSupplyDefaults', {});
@@ -80,7 +80,15 @@ define([
 
             $scope.updateCurrentAccountMosaics();
 
-            $scope.ok = function () {
+            $scope.okPressed = false;
+            $scope.ok = function txMosaicSupplyOk() {
+                $scope.okPressed = true;
+                $timeout(function txMosaicSupplyDeferred(){
+                    $scope._ok();
+                    $scope.okPressed = false;
+                });
+            };
+            $scope._ok = function txMosaicSupply_Ok() {
                 var orig = $scope.storage.getObject('txMosaicSupplyDefaults');
                 $.extend(orig, {
                     'due': $scope.txMosaicSupplyData.due,
@@ -115,7 +123,7 @@ define([
                         if (rememberedKey) { delete $scope.common.privatekey; }
                     }
                 );
-            };
+            }; // $scope._ok
 
             $scope.cancel = function () {
                 $scope.$dismiss();

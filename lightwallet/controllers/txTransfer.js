@@ -12,8 +12,8 @@ define([
     var mod = angular.module('walletApp.controllers');
 
     mod.controller('TxTransferCtrl',
-        ["$scope", "$window", "$http", "Transactions", 'walletScope',
-        function($scope, $window, $http, Transactions, walletScope) {
+        ["$scope", "$window", "$http", "$timeout", "Transactions", 'walletScope',
+        function($scope, $window, $http, $timeout, Transactions, walletScope) {
             $scope.walletScope = walletScope;
             $scope.encryptDisabled = false;
             $scope.storage = $window.localStorage;
@@ -80,7 +80,15 @@ define([
                 }
             });
 
-            $scope.ok = function () {
+            $scope.okPressed = false;
+            $scope.ok = function txTransferOk() {
+                $scope.okPressed = true;
+                $timeout(function txTransferDeferred(){
+                    $scope._ok();
+                    $scope.okPressed = false;
+                }); // timeout 
+            };
+            $scope._ok = function txTransfer_Ok() {
                 // save most recent data
                 // BUG: tx data is saved globally not per wallet...
                 var orig = $scope.storage.getObject('txTransferDefaults');
@@ -130,7 +138,7 @@ define([
                         if (rememberedKey) { delete $scope.common.privatekey; }
                     }
                 );
-            };
+            }; // $scope._ok
 
             $scope.cancel = function () {
                 $scope.$dismiss();

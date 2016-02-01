@@ -12,8 +12,8 @@ define([
     var mod = angular.module('walletApp.controllers');
 
     mod.controller('TxNamespaceCtrl',
-        ["$scope", "$window", "Transactions", 'walletScope',
-        function($scope, $window, Transactions, walletScope) {
+        ["$scope", "$window", "$timeout", "Transactions", 'walletScope',
+        function($scope, $window, $timeout, Transactions, walletScope) {
             $scope.walletScope = walletScope;
             $scope.storage = $window.localStorage;
             $scope.storage.setDefault('txNamespaceDefaults', {});
@@ -83,7 +83,16 @@ define([
             });
 
             $scope._updateCurrentAccount();
-            $scope.ok = function () {
+
+            $scope.okPressed = false;
+            $scope.ok = function txNamespaceOk() {
+                $scope.okPressed = true;
+                $timeout(function txNamespaceDeferred(){
+                    $scope._ok();
+                    $scope.okPressed = false;
+                });
+            };
+            $scope._ok = function txNamespace_Ok() {
                 var orig = $scope.storage.getObject('txNamespaceDefaults');
                 $.extend(orig, {
                     'due': $scope.txNamespaceData.due,
@@ -118,7 +127,7 @@ define([
                         if (rememberedKey) { delete $scope.common.privatekey; }
                     }
                 );
-            };
+            }; // $scope._ok
 
             $scope.cancel = function () {
                 $scope.$dismiss();
