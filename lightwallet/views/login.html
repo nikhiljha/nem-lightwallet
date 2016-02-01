@@ -23,9 +23,10 @@
                         {{host.uri}}
                 </label>
             </div>
-            <div class="form-group">
+            <div class="form-group" ng-class="{'has-error':formnode.nodeAddress.$error.hostField}">
                 <label for="nodeAdress">Custom node:</label>
-                <input ng-model="customSelectedHost" class="form-control" name="nodeAddress" id="nodeAddress">
+                <input ng-model="customSelectedHost" class="form-control" name="nodeAddress" id="nodeAddress" placeholder="http://hostname:7777" host-field>
+                <span ng-show="formnode.nodeAddress.$error.hostField">Invalid host name, valid format http://hostname:port (usually port is 7777)</span>
             </div>
             <div class="form-group">
                 <button type="submit" class="btn btn-default" ng-click="connect()" ng-disabled="! selectedHost && !customSelectedHost">

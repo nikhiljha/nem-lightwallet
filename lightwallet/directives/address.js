@@ -11,6 +11,11 @@ define([
             require: 'ngModel',
             link: function(scope, elm, attrs, ctrl) {
                 ctrl.$validators.addressField = function addressField(modelValue, viewValue) {
+                    if (scope.walletScope) {
+                        if (!Address.isFromNetwork(modelValue, scope.walletScope.networkId)) {
+                            return false;
+                        }
+                    }
                     if (ctrl.$isEmpty(modelValue)) {
                         return false;
                     }

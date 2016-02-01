@@ -4,10 +4,11 @@ define([
     'definitions',
     'jquery',
     'utils/CryptoHelpers',
+    'utils/Address',
 
     'filters/filters',
     'services/Transactions'
-], function(angular, $, CryptoHelpers) {
+], function(angular, $, CryptoHelpers, Address) {
     var mod = angular.module('walletApp.controllers');
 
     mod.controller('TxTransferCtrl',
@@ -70,9 +71,12 @@ define([
                 if (! (recipientAddress in $scope.recipientCache)) {
                     var _uriParser = document.createElement('a');
                     _uriParser.href = $scope.walletScope.sessionData.getNode().uri;
-                    $http.get('http://'+_uriParser.hostname+':'+nisPort+'/account/get', obj).then(function (data){
-                        $scope.recipientCache[recipientAddress] = data.data.account.publicKey;
-                    });
+                    if (Address.isFromNetwork(recipientAddress, $scope.walletScope.networkId)) {
+                        console.log(recipientAddress, $scope.walletScope.networkId);
+                        $http.get('http://'+_uriParser.hostname+':'+nisPort+'/account/get', obj).then(function (data){
+                            $scope.recipientCache[recipientAddress] = data.data.account.publicKey;
+                        });
+                    }
                 }
             });
 

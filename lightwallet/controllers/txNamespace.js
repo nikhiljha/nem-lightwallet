@@ -4,10 +4,11 @@ define([
     'definitions',
     'jquery',
     'utils/CryptoHelpers',
+    'sinks',
 
     'filters/filters',
     'services/Transactions'
-], function(angular, $, CryptoHelpers) {
+], function(angular, $, CryptoHelpers, sinks) {
     var mod = angular.module('walletApp.controllers');
 
     mod.controller('TxNamespaceCtrl',
@@ -43,7 +44,7 @@ define([
                 'privatekey': '',
             };
             $scope.txNamespaceData = {
-                'rentalFeeSink': 'TAMESP-ACEWH4-MKFMBC-VFERDP-OOP4FK-7MTDJE-YP35',
+                'rentalFeeSink': '',
                 'rentalFee': 0,
                 'namespaceName': '',
                 'namespaceParent': null,
@@ -53,9 +54,7 @@ define([
                 'isMultisig': ($scope.storage.getObject('txNamespaceDefaults').isMultisig  && walletScope.accountData.meta.cosignatoryOf.length > 0) || false,
                 'multisigAccount': walletScope.accountData.meta.cosignatoryOf.length == 0?'':walletScope.accountData.meta.cosignatoryOf[0]
             };
-			if ($scope.walletScope.networkId === 104) {
-				$scope.txNamespaceData.rentalFeeSink = 'NAMESP-ACEWH4-MKFMBC-VFERDP-OOP4FK-7MTBXD-PZZA';
-			}
+            $scope.txNamespaceData.rentalFeeSink = sinks.namespace[$scope.walletScope.networkId];
 
             $scope.namespaceLevel3 = function(elem) {
                 return elem.fqn.split('.').length < 3

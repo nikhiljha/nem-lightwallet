@@ -4,10 +4,11 @@ define([
     'definitions',
     'jquery',
     'utils/CryptoHelpers',
+    'sinks',
 
     'filters/filters',
     'services/Transactions'
-], function(angular, $, CryptoHelpers) {
+], function(angular, $, CryptoHelpers, sinks) {
     var mod = angular.module('walletApp.controllers');
 
     mod.controller('TxMosaicCtrl',
@@ -59,7 +60,7 @@ define([
                 'privatekey': '',
             };
             $scope.txMosaicData = {
-                'mosaicFeeSink': 'TBMOSA-ICOD4F-54EE5C-DMR23C-CBGOAM-2XSJBR-5OLC',
+                'mosaicFeeSink': '',
                 'mosaicFee': 50000 * 1000000,
                 'mosaicName': '',
                 'namespaceParent': '',
@@ -72,12 +73,9 @@ define([
                 'isMultisig': ($scope.storage.getObject('txMosaicDefaults').isMultisig  && walletScope.accountData.meta.cosignatoryOf.length > 0) || false,
                 'multisigAccount': walletScope.accountData.meta.cosignatoryOf.length == 0?'':walletScope.accountData.meta.cosignatoryOf[0]
             };
-			if ($scope.walletScope.networkId === 104) {
-				$scope.txMosaicData.mosaicFeeSink = 'NBMOSA-ICOD4F-54EE5C-DMR23C-CBGOAM-2XSIUX-6TRS';
-			}
+            $scope.txMosaicData.rentalFeeSink = sinks.mosaic[$scope.walletScope.networkId];
 
             $scope.hasLevy = false;
-
             function updateFee() {
                 var entity = Transactions.prepareMosaicDefinition($scope.common, $scope.txMosaicData);
                 $scope.txMosaicData.fee = entity.fee;

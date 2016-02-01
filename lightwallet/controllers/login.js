@@ -305,5 +305,20 @@ define([
         };
     }]);
 
+    mod.directive('hostField', function() {
+        return {
+            require: 'ngModel',
+            link: function(scope, elm, attrs, ctrl) {
+                ctrl.$validators.hostField = function addressField(modelValue, viewValue) {
+                    if (ctrl.$isEmpty(modelValue)) {
+                        return true;
+                    }
+                    return modelValue.match(/^http[s]?:\/\/[^:]*:[0-9]{1,5}/) != null;
+                };
+            }
+
+        };
+    });
+
     return mod;
 });
