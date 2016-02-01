@@ -12,8 +12,8 @@ define([
     var mod = angular.module('walletApp.controllers');
 
     mod.controller('TxMosaicCtrl',
-        ["$scope", "$window", "Transactions", 'walletScope',
-        function($scope, $window, Transactions, walletScope) {
+        ["$scope", "$window", "$timeout", "Transactions", 'walletScope',
+        function($scope, $window, $timeout, Transactions, walletScope) {
             $scope.walletScope = walletScope;
             $scope.storage = $window.localStorage;
             $scope.storage.setDefault('txMosaicDefaults', {});
@@ -73,7 +73,7 @@ define([
                 'isMultisig': ($scope.storage.getObject('txMosaicDefaults').isMultisig  && walletScope.accountData.meta.cosignatoryOf.length > 0) || false,
                 'multisigAccount': walletScope.accountData.meta.cosignatoryOf.length == 0?'':walletScope.accountData.meta.cosignatoryOf[0]
             };
-            $scope.txMosaicData.rentalFeeSink = sinks.mosaic[$scope.walletScope.networkId];
+            $scope.txMosaicData.mosaicFeeSink = sinks.mosaic[$scope.walletScope.networkId];
 
             $scope.hasLevy = false;
             function updateFee() {
@@ -100,7 +100,15 @@ define([
 
             $scope.updateCurrentAccountMosaics();
 
-            $scope.ok = function () {
+            $scope.okPressed = false;
+            $scope.ok = function txMosaicOk() {
+                $scope.okPressed = true;
+                $timeout(function txMosaicDeferred(){
+                    $scope._ok();
+                    $scope.okPressed = false;
+                });
+            };
+            $scope._ok = function txMosaic_Ok() {
                 var orig = $scope.storage.getObject('txMosaicDefaults');
                 $.extend(orig, {
                     'due': $scope.txMosaicData.due,
@@ -135,7 +143,7 @@ define([
                         if (rememberedKey) { delete $scope.common.privatekey; }
                     }
                 );
-            };
+            }; // $scope._ok
 
             $scope.cancel = function () {
                 $scope.$dismiss();

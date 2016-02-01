@@ -12,8 +12,8 @@ define([
     var mod = angular.module('walletApp.controllers');
 
     mod.controller('TxCosignatureCtrl',
-        ["$scope", "$window", "Transactions", 'walletScope', 'parent', 'meta',
-        function($scope, $window, Transactions, walletScope, parent, meta) {
+        ["$scope", "$window", "$timeout", "Transactions", 'walletScope', 'parent', 'meta',
+        function($scope, $window, $timeout, Transactions, walletScope, parent, meta) {
             $scope.walletScope = walletScope;
             $scope.storage = $window.localStorage;
             $scope.storage.setDefault('txCosignDefaults', {});
@@ -36,7 +36,15 @@ define([
                 $scope.invalidKeyOrPassword = false;
             });
 
-            $scope.ok = function () {
+            $scope.okPressed = false;
+            $scope.ok = function txCosignOk() {
+                $scope.okPressed = true;
+                $timeout(function txCosignDeferred(){
+                    $scope._ok();
+                    $scope.okPressed = false;
+                });
+            };
+            $scope._ok = function txCosign_Ok() {
                 // save most recent data
                 var orig = $scope.storage.getObject('txCosignDefaults')
                 $.extend(orig, {
@@ -71,7 +79,7 @@ define([
                         if (rememberedKey) { delete $scope.common.privatekey; }
                     }
                 );
-            };
+            }; // $scope._ok
 
             $scope.cancel = function () {
                 $scope.$dismiss();

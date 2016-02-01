@@ -41,7 +41,7 @@
         </div>
         <div class="form-group" ng-class="{'has-error':txMosaicData.mosaicName.length===0}">
             <label for="mosaicName" class="control-label">Mosaic name</label>
-            <input type="text" class="form-control" ng-model="txMosaicData.mosaicName" id="mosaicName" placeholder="">
+            <input autofocus="autofocus" type="text" class="form-control" ng-model="txMosaicData.mosaicName" id="mosaicName" placeholder="">
         </div>
         <div class="form-group" ng-class="{'has-error':txMosaicData.mosaicDescription.length===0}">
             <label for="mosaicDescription" class="control-label">Mosaic description</label>
@@ -197,6 +197,6 @@
 </div>
 <div class="modal-footer">
     <span ng-show="invalidKeyOrPassword" class="text-danger glyphicon glyphicon-exclamation-sign"></span>
-    <button class="btn btn-primary" type="button" ng-disabled="common.requiresKey && common.privatekey.length === 0 && common.password.length === 0" ng-click="ok()">Send</button>
+    <button class="btn btn-primary" type="button" ng-disabled="okPressed || common.requiresKey && common.privatekey.length === 0 && common.password.length === 0" ng-click="ok()">Send</button>
     <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
 </div>
