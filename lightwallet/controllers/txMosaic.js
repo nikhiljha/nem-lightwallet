@@ -72,6 +72,9 @@ define([
                 'isMultisig': ($scope.storage.getObject('txMosaicDefaults').isMultisig  && walletScope.accountData.meta.cosignatoryOf.length > 0) || false,
                 'multisigAccount': walletScope.accountData.meta.cosignatoryOf.length == 0?'':walletScope.accountData.meta.cosignatoryOf[0]
             };
+			if ($scope.walletScope.networkId === 104) {
+				$scope.txMosaicData.mosaicFeeSink = 'NBMOSA-ICOD4F-54EE5C-DMR23C-CBGOAM-2XSIUX-6TRS';
+			}
 
             $scope.hasLevy = false;
 

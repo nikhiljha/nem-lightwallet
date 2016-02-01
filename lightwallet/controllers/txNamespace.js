@@ -53,6 +53,9 @@ define([
                 'isMultisig': ($scope.storage.getObject('txNamespaceDefaults').isMultisig  && walletScope.accountData.meta.cosignatoryOf.length > 0) || false,
                 'multisigAccount': walletScope.accountData.meta.cosignatoryOf.length == 0?'':walletScope.accountData.meta.cosignatoryOf[0]
             };
+			if ($scope.walletScope.networkId === 104) {
+				$scope.txNamespaceData.rentalFeeSink = 'NAMESP-ACEWH4-MKFMBC-VFERDP-OOP4FK-7MTBXD-PZZA';
+			}
 
             $scope.namespaceLevel3 = function(elem) {
                 return elem.fqn.split('.').length < 3
