@@ -84,6 +84,12 @@ define([
         return ret;
     };
 
+    Address.isFromNetwork = function isFromNetwork(_address, networkId) {
+        var address = _address.toString().toUpperCase().replace(/-/g, '');
+        var a = address[0];
+        return (networkId === -104 && a === 'T') || (networkId === 104 && a === 'N') || (networkId === 96 && a === 'M');
+    };
+
     Address.isValid = function isValid(_address) {
         var address = _address.toString().toUpperCase().replace(/-/g, '');
         if (!address || address.length !== 40) {
