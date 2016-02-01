@@ -25,7 +25,7 @@ define([
 
     mod.controller('WalletCtrl',
         ["$scope", "$http", "$location", "$window", "$timeout", "$routeParams", "$uibModal", "sessionData",
-        function($scope, $http, $location, $window, $timeout, $routeParams, $uibModal, sessionData) {
+        function WalletCtrl($scope, $http, $location, $window, $timeout, $routeParams, $uibModal, sessionData) {
             if (sessionData.getNisPort() === 0 || !sessionData.getNetworkId() || !sessionData.getNode()) {
                 $location.path('/login');
 				return;
@@ -254,6 +254,12 @@ define([
                 $scope.name = elem[0].name;
                 $scope.account = elem[0].accounts[0].address;
                 $scope.connectionStatus = "connecting";
+
+                var _uriParser = document.createElement('a');
+                _uriParser.href = $scope.sessionData.getNode().uri;
+                $http.get('http://'+_uriParser.hostname+':'+$scope.nisPort+'/chain/height').then(function (data){
+                    $scope.nisHeight = data.height;
+                });
 
                 var connector = Connector(sessionData.getNode(), elem[0].accounts[0].address);
                 connector.connect(function(){
@@ -484,7 +490,6 @@ define([
                     var obj = {'params':{'address':scope.tx.recipient}};
                     var _uriParser = document.createElement('a');
                     _uriParser.href = scope.$parent.walletScope.sessionData.getNode().uri;
-
                     $http.get('http://'+_uriParser.hostname+':'+nisPort+'/account/get', obj).then(function (data){
                         scope.recipientPublicKey = data.data.account.publicKey;
 
