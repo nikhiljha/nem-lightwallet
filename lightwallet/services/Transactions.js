@@ -26,7 +26,7 @@ define([
             } else if (CURRENT_NETWORK_ID === -104) {
                 return 0x98000000 | val;
             }
-            return val;
+            return 0x60000000 | val;
         };
 
         function CREATE_DATA(txtype, senderPublicKey, timeStamp, due, version)
