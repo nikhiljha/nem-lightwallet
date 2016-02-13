@@ -12,8 +12,8 @@ define([
     var mod = angular.module('walletApp.controllers');
 
     mod.controller('TxCosignatureCtrl',
-        ["$scope", "$window", "$timeout", "Transactions", 'walletScope', 'parent', 'meta',
-        function($scope, $window, $timeout, Transactions, walletScope, parent, meta) {
+        ["$scope", "$window", "$q", "$timeout", "Transactions", 'walletScope', 'parent', 'meta',
+        function($scope, $window, $q, $timeout, Transactions, walletScope, parent, meta) {
             $scope.walletScope = walletScope;
             $scope.storage = $window.localStorage;
             $scope.storage.setDefault('txCosignDefaults', {});
@@ -40,8 +40,11 @@ define([
             $scope.ok = function txCosignOk() {
                 $scope.okPressed = true;
                 $timeout(function txCosignDeferred(){
-                    $scope._ok();
-                    $scope.okPressed = false;
+                    $scope._ok().then(function(){
+                        $scope.okPressed = false;
+                    }, function(){ 
+                        $scope.okPressed = false;
+                    });
                 });
             };
             $scope._ok = function txCosign_Ok() {
@@ -59,10 +62,10 @@ define([
                 } else {
                     if (! CryptoHelpers.passwordToPrivatekey($scope.common, $scope.walletScope.networkId, $scope.walletScope.walletAccount) ) {
                         $scope.invalidKeyOrPassword = true;
-                        return;
+                        return $q.resolve(0);
                     }
                 }
-                Transactions.prepareSignature($scope.common, $scope.txCosignData, $scope.walletScope.nisPort,
+                return Transactions.prepareSignature($scope.common, $scope.txCosignData, $scope.walletScope.nisPort,
                     function(data) {
                         if (data.status === 200) {
                             if (data.data.code >= 2) {

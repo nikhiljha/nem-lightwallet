@@ -84,8 +84,11 @@ define([
             $scope.ok = function txMosaicSupplyOk() {
                 $scope.okPressed = true;
                 $timeout(function txMosaicSupplyDeferred(){
-                    $scope._ok();
-                    $scope.okPressed = false;
+                    $scope._ok().then(function(){
+                        $scope.okPressed = false;
+                    }, function(){ 
+                        $scope.okPressed = false;
+                    });
                 });
             };
             $scope._ok = function txMosaicSupply_Ok() {
@@ -102,11 +105,11 @@ define([
                 } else {
                     if (! CryptoHelpers.passwordToPrivatekey($scope.common, $scope.walletScope.networkId, $scope.walletScope.walletAccount) ) {
                         $scope.invalidKeyOrPassword = true;
-                        return;
+                        return $q.resolve(0);
                     }
                 }
                 var entity = Transactions.prepareMosaicSupply($scope.common, $scope.txMosaicSupplyData);
-                Transactions.serializeAndAnnounceTransaction(entity, $scope.common, $scope.txMosaicSupplyData, $scope.walletScope.nisPort,
+                return Transactions.serializeAndAnnounceTransaction(entity, $scope.common, $scope.txMosaicSupplyData, $scope.walletScope.nisPort,
                     function(data) {
                         if (data.status === 200) {
                             if (data.data.code >= 2) {
