@@ -12,8 +12,8 @@ define([
     var mod = angular.module('walletApp.controllers');
 
     mod.controller('TxMosaicCtrl',
-        ["$scope", "$window", "$timeout", "Transactions", 'walletScope',
-        function($scope, $window, $timeout, Transactions, walletScope) {
+        ["$scope", "$window", "$q", "$timeout", "Transactions", 'walletScope',
+        function($scope, $window, $q, $timeout, Transactions, walletScope) {
             $scope.walletScope = walletScope;
             $scope.storage = $window.localStorage;
             $scope.storage.setDefault('txMosaicDefaults', {});
@@ -104,8 +104,11 @@ define([
             $scope.ok = function txMosaicOk() {
                 $scope.okPressed = true;
                 $timeout(function txMosaicDeferred(){
-                    $scope._ok();
-                    $scope.okPressed = false;
+                    $scope._ok().then(function(){
+                        $scope.okPressed = false;
+                    }, function(){ 
+                        $scope.okPressed = false;
+                    });
                 });
             };
             $scope._ok = function txMosaic_Ok() {
@@ -122,11 +125,11 @@ define([
                 } else {
                     if (! CryptoHelpers.passwordToPrivatekey($scope.common, $scope.walletScope.networkId, $scope.walletScope.walletAccount) ) {
                         $scope.invalidKeyOrPassword = true;
-                        return;
+                        return $q.resolve(0);
                     }
                 }
                 var entity = Transactions.prepareMosaicDefinition($scope.common, $scope.txMosaicData);
-                Transactions.serializeAndAnnounceTransaction(entity, $scope.common, $scope.txMosaicData, $scope.walletScope.nisPort,
+                return Transactions.serializeAndAnnounceTransaction(entity, $scope.common, $scope.txMosaicData, $scope.walletScope.nisPort,
                     function(data) {
                         if (data.status === 200) {
                             if (data.data.code >= 2) {

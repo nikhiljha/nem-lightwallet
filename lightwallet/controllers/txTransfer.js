@@ -12,8 +12,8 @@ define([
     var mod = angular.module('walletApp.controllers');
 
     mod.controller('TxTransferCtrl',
-        ["$scope", "$window", "$http", "$timeout", "Transactions", 'walletScope',
-        function($scope, $window, $http, $timeout, Transactions, walletScope) {
+        ["$scope", "$window", "$http", "$q", "$timeout", "Transactions", 'walletScope',
+        function($scope, $window, $http, $q, $timeout, Transactions, walletScope) {
             $scope.walletScope = walletScope;
             $scope.encryptDisabled = false;
             $scope.storage = $window.localStorage;
@@ -79,13 +79,15 @@ define([
                     }
                 }
             });
-
             $scope.okPressed = false;
             $scope.ok = function txTransferOk() {
                 $scope.okPressed = true;
                 $timeout(function txTransferDeferred(){
-                    $scope._ok();
-                    $scope.okPressed = false;
+                    $scope._ok().then(function(){
+                        $scope.okPressed = false;
+                    }, function(){ 
+                        $scope.okPressed = false;
+                    });
                 }); // timeout 
             };
             $scope._ok = function txTransfer_Ok() {
@@ -106,8 +108,7 @@ define([
                 var recipientAddress = $scope.txTransferData.recipient.toUpperCase().replace(/-/g, '');
                 $scope.txTransferData.recipientPubKey = $scope.recipientCache[recipientAddress];
                 if ($scope.txTransferData.encryptMessage && !$scope.txTransferData.recipientPubKey) {
-                    $scope.walletScope.displayWarning("Encrypted message selected, but couldn't find public key of a recipient");
-                    return;
+                    return $scope.walletScope.displayWarning("Encrypted message selected, but couldn't find public key of a recipient");
                 }
 
                 var rememberedKey = $scope.walletScope.sessionData.getRememberedKey();
@@ -116,12 +117,12 @@ define([
                 } else {
                     if (! CryptoHelpers.passwordToPrivatekey($scope.common, $scope.walletScope.networkId, $scope.walletScope.walletAccount) ) {
                         $scope.invalidKeyOrPassword = true;
-                        return;
+                        return $q.resolve(0);
                     }
                 }
 
                 var entity = Transactions.prepareTransfer($scope.common, $scope.txTransferData);
-                Transactions.serializeAndAnnounceTransaction(entity, $scope.common, $scope.txTransferData, $scope.walletScope.nisPort,
+                return Transactions.serializeAndAnnounceTransaction(entity, $scope.common, $scope.txTransferData, $scope.walletScope.nisPort,
                     function(data) {
                         if (data.status === 200) {
                             if (data.data.code >= 2) {

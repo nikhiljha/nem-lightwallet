@@ -28,7 +28,7 @@ define([
         function WalletCtrl($scope, $http, $location, $window, $timeout, $routeParams, $uibModal, sessionData) {
             if (sessionData.getNisPort() === 0 || !sessionData.getNetworkId() || !sessionData.getNode()) {
                 $location.path('/login');
-				return;
+                return;
             }
 
             $scope.$on('$locationChangeStart', function( event ) {
@@ -73,6 +73,7 @@ define([
                         warningMsg: function() { return warningMsg; }
                     }
                 });
+                return modalInstance.result;
             };
             $scope.displayTransferDialog = function() {
                 var modalInstance = $uibModal.open({

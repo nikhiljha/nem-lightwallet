@@ -12,8 +12,8 @@ define([
     var mod = angular.module('walletApp.controllers');
 
     mod.controller('TxNamespaceCtrl',
-        ["$scope", "$window", "$timeout", "Transactions", 'walletScope',
-        function($scope, $window, $timeout, Transactions, walletScope) {
+        ["$scope", "$window", "$q", "$timeout", "Transactions", 'walletScope',
+        function($scope, $window, $q, $timeout, Transactions, walletScope) {
             $scope.walletScope = walletScope;
             $scope.storage = $window.localStorage;
             $scope.storage.setDefault('txNamespaceDefaults', {});
@@ -88,8 +88,11 @@ define([
             $scope.ok = function txNamespaceOk() {
                 $scope.okPressed = true;
                 $timeout(function txNamespaceDeferred(){
-                    $scope._ok();
-                    $scope.okPressed = false;
+                    $scope._ok().then(function(){
+                        $scope.okPressed = false;
+                    }, function(){ 
+                        $scope.okPressed = false;
+                    });
                 });
             };
             $scope._ok = function txNamespace_Ok() {
@@ -106,11 +109,11 @@ define([
                 } else {
                     if (! CryptoHelpers.passwordToPrivatekey($scope.common, $scope.walletScope.networkId, $scope.walletScope.walletAccount) ) {
                         $scope.invalidKeyOrPassword = true;
-                        return;
+                        return $q.resolve(0);
                     }
                 }
                 var entity = Transactions.prepareNamespace($scope.common, $scope.txNamespaceData);
-                Transactions.serializeAndAnnounceTransaction(entity, $scope.common, $scope.txNamespaceData, $scope.walletScope.nisPort,
+                return Transactions.serializeAndAnnounceTransaction(entity, $scope.common, $scope.txNamespaceData, $scope.walletScope.nisPort,
                     function(data) {
                         if (data.status === 200) {
                             if (data.data.code >= 2) {

@@ -671,7 +671,7 @@ define([
                 failedCb('prepare', data);
             });
             /*/
-            $http.post('http://'+CURRENT_HOSTNAME+':'+nisPort+'/transaction/announce', obj).then(function (data){
+            return $http.post('http://'+CURRENT_HOSTNAME+':'+nisPort+'/transaction/announce', obj).then(function (data){
                 cb(data);
             }, function(data) {
                 failedCb('announce', data);
@@ -702,7 +702,7 @@ define([
                 failedCb('prepare', data);
             });
             /*/
-            $http.post('http://'+CURRENT_HOSTNAME+':'+nisPort+'/transaction/announce', obj).then(function (data){
+            return $http.post('http://'+CURRENT_HOSTNAME+':'+nisPort+'/transaction/announce', obj).then(function (data){
                 cb(data);
             }, function(data) {
                 failedCb('announce', data);
