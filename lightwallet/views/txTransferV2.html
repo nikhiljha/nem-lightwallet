@@ -3,8 +3,8 @@
 </div>
 <div class="modal-body">
     <ul class="nav nav-tabs" ng-show="walletScope.accountData.meta.cosignatoryOf.length">
-        <li role="presentation" ng-class="txTransferV2Data.isMultisig?'':'active'" ng-click="selectTab('normal')"><a href="#">Normal</a></li>
-        <li role="presentation" ng-class="txTransferV2Data.isMultisig?'active':''" ng-click="selectTab('multisig')"><a href="#">Multisig</a></li>
+		<li role="presentation" ng-class="txTransferV2Data.isMultisig?'':'active'" ng-click="selectTab('normal')"><a style="cursor:pointer">Normal</a></li>
+		<li role="presentation" ng-class="txTransferV2Data.isMultisig?'active':''" ng-click="selectTab('multisig')"><a style="cursor:pointer">Multisig</a></li>
     </ul>
 
     <form name="formtransfer2">
