@@ -263,9 +263,9 @@ define([
 
                 var connector = Connector(sessionData.getNode(), elem[0].accounts[0].address);
                 connector.connect(function(){
-                    $scope.$apply(function(){
+                    $timeout(function(){
                         $scope.connectionStatus = "connected";
-                    });
+                    }, 0);
 
                     function unconfirmedCallback(d) {
                         // we could first check if coming tx is already in unconfirmed, but
@@ -324,9 +324,9 @@ define([
                         alert(d.error + " " + d.message);
                     });
                     connector.on('account', function(d) {
-                        $scope.$apply(function(){
+                        $timeout(function(){
                             $scope.accountData = d;
-                        });
+                        }, 0);
                         //console.log("account data: ", $scope.accountData);
 
                         // prepare callback for multisig accounts
@@ -355,9 +355,9 @@ define([
 
                     connector.on('recenttransactions', function(d) {
                         d.data.reverse();
-                        $scope.$apply(function(){
+                        $timeout(function(){
                             $scope.transactions = d.data;
-                        });
+                        }, 0);
                         //console.log("recenttransactions data: ", d);
                     });
 
@@ -371,9 +371,9 @@ define([
                                 //console.log("OK, ", blockHeight, "removed tx: ", tx);
                             }
                         });
-                        $scope.$apply(function(){
+                        $timeout(function(){
                             $scope.transactions = cleanedTransactions;
-                        });
+                        }, 0);
                     });
                     connector.onConfirmed(confirmedCallback);
                     connector.onUnconfirmed(unconfirmedCallback);
