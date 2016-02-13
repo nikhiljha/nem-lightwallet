@@ -26,11 +26,17 @@ define([
             };
             $scope.txCosignData = {
                 'fee': $scope.storage.getObject('txCosignDefaults').fee || 0,
-                'due': $scope.storage.getObject('txCosignDefaults').due || 60,
+                'due': $scope.storage.getObject('txCosignDefaults').due || (24 * 60),
                 'multisigAccount': parent.otherTrans.signer, // inner tx signer is a multisig account
                 'multisigAccountAddress': Address.toAddress(parent.otherTrans.signer, $scope.walletScope.networkId),
                 'hash': meta.innerHash.data, // hash of an inner tx is needed
             };
+
+            // fix old default
+            var ver = $scope.storage.getObject('txCosignDefaults').ver;
+            if (! ver) {
+                $scope.txCosignData.due = 24 * 60;
+            }
 
             $scope.$watchGroup(['common.password', 'common.privatekey'], function(nv,ov){
                 $scope.invalidKeyOrPassword = false;
@@ -52,7 +58,8 @@ define([
                 var orig = $scope.storage.getObject('txCosignDefaults')
                 $.extend(orig, {
                     'fee':$scope.txCosignData.fee,
-                    'due':$scope.txCosignData.due
+                    'due':$scope.txCosignData.due,
+                    'ver': 1
                 });
                 $scope.storage.setObject('txCosignDefaults', orig);
 

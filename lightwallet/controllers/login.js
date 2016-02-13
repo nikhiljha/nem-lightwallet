@@ -70,10 +70,10 @@ define([
             var connector = NodeConnector(sessionData.getNode());
             $scope.hostChosen = true;
             connector.connect(function(){
-                $scope.$apply(function(){
+                $timeout(function(){
                     $scope.connectionStatus = "checking";
                     $scope.connectionData = '';
-                });
+                }, 0);
 
                 connector.on('errors', function(name, d) {
                     if (d.message === "NIS_ILLEGAL_STATE_NOT_BOOTED") {
@@ -89,7 +89,7 @@ define([
                     }
                 });
                 connector.on('nodeInfo', function(d) {
-                    $scope.$apply(function(){
+                    $timeout(function(){
                         $scope.connectionStatus = "connected";
                         $scope.connectionData = d.identity.name;
                         $scope.showAll = true;
@@ -98,7 +98,7 @@ define([
 
                         sessionData.setNetworkId($scope.network);
                         sessionData.setNisPort($scope.nisPort);
-                    });
+                    }, 0);
                 });
                 connector.requestNodeInfo();
             });
