@@ -326,31 +326,32 @@ define([
                     connector.on('account', function(d) {
                         $timeout(function(){
                             $scope.accountData = d;
+
+                            //console.log("account data: ", $scope.accountData);
+
+                            // prepare callback for multisig accounts
+                            for (var elem of $scope.accountData.meta.cosignatoryOf) {
+                                connector.onConfirmed(confirmedCallback, elem.address);
+                                connector.onUnconfirmed(unconfirmedCallback, elem.address);
+                                connector.onNamespace(namespaceCallback, elem.address);
+                                connector.onMosaicDefinition(mosaicDefinitionCallback, elem.address);
+                                connector.onMosaic(mosaicCallback, elem.address);
+                            }
+
+                            // we need to subscribe to multisig accounts, in order to receive notifications
+                            // about transactions involving those accounts
+                            for (var elem of $scope.accountData.meta.cosignatoryOf) {
+                                // no need to check return value, as if we're here, it means we're already connected
+                                connector.subscribeToMultisig(elem.address);
+
+                                // we don't need to request that, as request for accounts' unconfirmed txes should include those needed cosingature
+                                //connector.requestUnconfirmedTransactions(elem.address);
+
+                                connector.requestAccountNamespaces(elem.address);
+                                connector.requestAccountMosaicDefinitions(elem.address);
+                                connector.requestAccountMosaics(elem.address);
+                            }
                         }, 0);
-                        //console.log("account data: ", $scope.accountData);
-
-                        // prepare callback for multisig accounts
-                        for (var elem of $scope.accountData.meta.cosignatoryOf) {
-                            connector.onConfirmed(confirmedCallback, elem.address);
-                            connector.onUnconfirmed(unconfirmedCallback, elem.address);
-                            connector.onNamespace(namespaceCallback, elem.address);
-                            connector.onMosaicDefinition(mosaicDefinitionCallback, elem.address);
-                            connector.onMosaic(mosaicCallback, elem.address);
-                        }
-
-                        // we need to subscribe to multisig accounts, in order to receive notifications
-                        // about transactions involving those accounts
-                        for (var elem of $scope.accountData.meta.cosignatoryOf) {
-                            // no need to check return value, as if we're here, it means we're already connected
-                            connector.subscribeToMultisig(elem.address);
-
-                            // we don't need to request that, as request for accounts' unconfirmed txes should include those needed cosingature
-                            //connector.requestUnconfirmedTransactions(elem.address);
-
-                            connector.requestAccountNamespaces(elem.address);
-                            connector.requestAccountMosaicDefinitions(elem.address);
-                            connector.requestAccountMosaics(elem.address);
-                        }
                     });
 
                     connector.on('recenttransactions', function(d) {
