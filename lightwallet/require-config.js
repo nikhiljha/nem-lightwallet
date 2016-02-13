@@ -11,10 +11,10 @@ require.config({
 	paths: {
 		jquery: 'https://code.jquery.com/jquery-2.1.4.min',
 		bootstrap: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min',
-		angular: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min',
-		angularAnimate: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-animate.min',
-		angularRoute: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route.min',
-		angularSanitize: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-sanitize.min',
+		angular: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min',
+		angularAnimate: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-animate.min',
+		angularRoute: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-route.min',
+		angularSanitize: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-sanitize.min',
 		angularUib: 'https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.14.3/ui-bootstrap.min'
 	},
 	shim: {
