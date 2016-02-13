@@ -841,8 +841,8 @@ define([
     '</div>\n' +
     '<div class="modal-body">\n' +
     '    <ul class="nav nav-tabs" ng-show="walletScope.accountData.meta.cosignatoryOf.length">\n' +
-    '        <li role="presentation" ng-class="txMosaicData.isMultisig?\'\':\'active\'" ng-click="selectTab(\'normal\')"><a href="#">Normal</a></li>\n' +
-    '        <li role="presentation" ng-class="txMosaicData.isMultisig?\'active\':\'\'" ng-click="selectTab(\'multisig\')"><a href="#">Multisig</a></li>\n' +
+    '		<li role="presentation" ng-class="txMosaicData.isMultisig?\'\':\'active\'" ng-click="selectTab(\'normal\')"><a style="cursor:pointer">Normal</a></li>\n' +
+    '		<li role="presentation" ng-class="txMosaicData.isMultisig?\'active\':\'\'" ng-click="selectTab(\'multisig\')"><a style="cursor:pointer">Multisig</a></li>\n' +
     '    </ul>\n' +
     '\n' +
     '    <form name="formmosaic">\n' +
@@ -1045,8 +1045,8 @@ define([
     '</div>\n' +
     '<div class="modal-body">\n' +
     '    <ul class="nav nav-tabs" ng-show="walletScope.accountData.meta.cosignatoryOf.length">\n' +
-    '        <li role="presentation" ng-class="txMosaicSupplyData.isMultisig?\'\':\'active\'" ng-click="selectTab(\'normal\')"><a href="#">Normal</a></li>\n' +
-    '        <li role="presentation" ng-class="txMosaicSupplyData.isMultisig?\'active\':\'\'" ng-click="selectTab(\'multisig\')"><a href="#">Multisig</a></li>\n' +
+    '		<li role="presentation" ng-class="txMosaicSupplyData.isMultisig?\'\':\'active\'" ng-click="selectTab(\'normal\')"><a style="cursor:pointer">Normal</a></li>\n' +
+    '		<li role="presentation" ng-class="txMosaicSupplyData.isMultisig?\'active\':\'\'" ng-click="selectTab(\'multisig\')"><a style="cursor:pointer">Multisig</a></li>\n' +
     '    </ul>\n' +
     '\n' +
     '    <form>\n' +
@@ -1167,8 +1167,8 @@ define([
     '</div>\n' +
     '<div class="modal-body">\n' +
     '    <ul class="nav nav-tabs" ng-show="walletScope.accountData.meta.cosignatoryOf.length">\n' +
-    '        <li role="presentation" ng-class="txNamespaceData.isMultisig?\'\':\'active\'" ng-click="selectTab(\'normal\')"><a href="#">Normal</a></li>\n' +
-    '        <li role="presentation" ng-class="txNamespaceData.isMultisig?\'active\':\'\'" ng-click="selectTab(\'multisig\')"><a href="#">Multisig</a></li>\n' +
+    '		<li role="presentation" ng-class="txNamespaceData.isMultisig?\'\':\'active\'" ng-click="selectTab(\'normal\')"><a style="cursor:pointer">Normal</a></li>\n' +
+    '		<li role="presentation" ng-class="txNamespaceData.isMultisig?\'active\':\'\'" ng-click="selectTab(\'multisig\')"><a style="cursor:pointer">Multisig</a></li>\n' +
     '    </ul>\n' +
     '\n' +
     '    <form>\n' +
@@ -1242,8 +1242,8 @@ define([
     '</div>\n' +
     '<div class="modal-body">\n' +
     '    <ul class="nav nav-tabs" ng-show="walletScope.accountData.meta.cosignatoryOf.length">\n' +
-    '        <li role="presentation" ng-class="txTransferData.isMultisig?\'\':\'active\'" ng-click="txTransferData.isMultisig=false"><a href="#">Normal</a></li>\n' +
-    '        <li role="presentation" ng-class="txTransferData.isMultisig?\'active\':\'\'"ng-click="txTransferData.isMultisig=true"><a href="#">Multisig</a></li>\n' +
+    '		<li role="presentation" ng-class="txTransferData.isMultisig?\'\':\'active\'" ng-click="txTransferData.isMultisig=false"><a style="cursor:pointer">Normal</a></li>\n' +
+    '		<li role="presentation" ng-class="txTransferData.isMultisig?\'active\':\'\'"ng-click="txTransferData.isMultisig=true"><a style="cursor:pointer">Multisig</a></li>\n' +
     '    </ul>\n' +
     '\n' +
     '    <form name="formtransfer">\n' +
@@ -1315,8 +1315,8 @@ define([
     '</div>\n' +
     '<div class="modal-body">\n' +
     '    <ul class="nav nav-tabs" ng-show="walletScope.accountData.meta.cosignatoryOf.length">\n' +
-    '        <li role="presentation" ng-class="txTransferV2Data.isMultisig?\'\':\'active\'" ng-click="selectTab(\'normal\')"><a href="#">Normal</a></li>\n' +
-    '        <li role="presentation" ng-class="txTransferV2Data.isMultisig?\'active\':\'\'" ng-click="selectTab(\'multisig\')"><a href="#">Multisig</a></li>\n' +
+    '		<li role="presentation" ng-class="txTransferV2Data.isMultisig?\'\':\'active\'" ng-click="selectTab(\'normal\')"><a style="cursor:pointer">Normal</a></li>\n' +
+    '		<li role="presentation" ng-class="txTransferV2Data.isMultisig?\'active\':\'\'" ng-click="selectTab(\'multisig\')"><a style="cursor:pointer">Multisig</a></li>\n' +
     '    </ul>\n' +
     '\n' +
     '    <form name="formtransfer2">\n' +
