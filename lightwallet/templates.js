@@ -1501,9 +1501,9 @@ define([
     '\n' +
     '    <div>\n' +
     '        <ul class="nav nav-tabs">\n' +
-    '            <li role="presentation" ng-class="activeWalletTab === 0?\'active\':\'\' " ng-click="setWalletTab(0)"><a href="#">Transactions</a></li>\n' +
-    '            <li role="presentation" ng-class="activeWalletTab === 1?\'active\':\'\' " ng-click="setWalletTab(1)"><a href="#">Mosaics</a></li>\n' +
-    '            <li role="presentation" ng-class="activeWalletTab === 2?\'active\':\'\' " ng-click="setWalletTab(2)"><a href="#">Namespaces</a></li>\n' +
+    '            <li role="presentation" ng-class="activeWalletTab === 0?\'active\':\'\' " ng-click="setWalletTab(0)"><a style="cursor:pointer">Transactions</a></li>\n' +
+    '            <li role="presentation" ng-class="activeWalletTab === 1?\'active\':\'\' " ng-click="setWalletTab(1)"><a style="cursor:pointer">Mosaics</a></li>\n' +
+    '            <li role="presentation" ng-class="activeWalletTab === 2?\'active\':\'\' " ng-click="setWalletTab(2)"><a style="cursor:pointer">Namespaces</a></li>\n' +
     '        </ul>\n' +
     '    </div>\n' +
     '\n' +
@@ -1610,7 +1610,8 @@ define([
     '            </table>\n' +
     '        </div>\n' +
     '    </div>\n' +
-    '</div>');
+    '</div>\n' +
+    '');
   $templateCache.put('template/modal/backdrop.html',
     '<div uib-modal-animation-class="fade"\n' +
     '     modal-in-class="in"\n' +
