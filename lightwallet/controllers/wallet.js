@@ -275,7 +275,7 @@ define([
                             $scope.unconfirmedSize = Object.keys($scope.unconfirmed).length;
                         }, 0);
                         //console.log("unconfirmed data: ", Object.keys($scope.unconfirmed).length, d);
-                        var audio = new Audio('/lightwallet/ding.ogg');
+                        var audio = new Audio('ding.ogg');
                         audio.play();
                     }
 
@@ -287,7 +287,7 @@ define([
                             $scope.transactions.push(d);
                         }, 0);
                         // console.log(">> transactions data: ", d);
-                        var audio = new Audio('/lightwallet/ding2.ogg');
+                        var audio = new Audio('ding2.ogg');
                         audio.play();
                     }
 
