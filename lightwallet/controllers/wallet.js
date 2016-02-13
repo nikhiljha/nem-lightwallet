@@ -263,61 +263,60 @@ define([
 
                 var connector = Connector(sessionData.getNode(), elem[0].accounts[0].address);
                 connector.connect(function(){
-                    $scope.$apply(function(){
+                    $timeout(function(){
                         $scope.connectionStatus = "connected";
-                    });
+                    }, 0);
 
                     function unconfirmedCallback(d) {
                         // we could first check if coming tx is already in unconfirmed, but
                         // tx itself can change in case of multisig txes,, so don't do that check
-
-                        $scope.$apply(function(){
+                        $timeout(function() {
                             $scope.unconfirmed[d.meta.hash.data] = d;
                             $scope.unconfirmedSize = Object.keys($scope.unconfirmed).length;
-                        });
+                        }, 0);
                         //console.log("unconfirmed data: ", Object.keys($scope.unconfirmed).length, d);
                         var audio = new Audio('/lightwallet/ding.ogg');
                         audio.play();
                     }
 
+
                     function confirmedCallback(d) {
-                        $scope.$apply(function(){
+                        $timeout(function() {
                             delete $scope.unconfirmed[d.meta.hash.data];
                             $scope.unconfirmedSize = Object.keys($scope.unconfirmed).length;
-
                             $scope.transactions.push(d);
-                        });
+                        }, 0);
                         // console.log(">> transactions data: ", d);
                         var audio = new Audio('/lightwallet/ding2.ogg');
                         audio.play();
                     }
 
                     function mosaicDefinitionCallback(d) {
-                        $scope.$apply(function(){
+                        $timeout(function() {
                             $scope.mosaicDefinitionMetaDataPair[mosaicIdToName(d.mosaicDefinition.id)] = d;
                             $scope.mosaicDefinitionMetaDataPairSize = Object.keys($scope.mosaicDefinitionMetaDataPair).length;
-                        });
+                        }, 0);
                     }
 
                     function mosaicCallback(d, address) {
-                        $scope.$apply(function(){
+                        $timeout(function() {
                             var mosaicName = mosaicIdToName(d.mosaicId);
-                             if (! (address in $scope.mosaicOwned)) {
+                            if (! (address in $scope.mosaicOwned)) {
                                 $scope.mosaicOwned[address] = {};
-                             }
+                            }
                             $scope.mosaicOwned[address][mosaicName] = d;
                             $scope.mosaicOwnedSize[address] = Object.keys($scope.mosaicOwned[address]).length;
-                        });
+                        }, 0);
                     }
 
                     function namespaceCallback(d, address) {
-                        $scope.$apply(function(){
+                        $timeout(function() {
                             var namespaceName = d.fqn;
-                             if (! (address in $scope.namespaceOwned)) {
+                            if (! (address in $scope.namespaceOwned)) {
                                 $scope.namespaceOwned[address] = {};
-                             }
+                            }
                             $scope.namespaceOwned[address][namespaceName] = d;
-                        });
+                        }, 0);
                     }
 
                     connector.on('errors', function(name, d) {
@@ -325,9 +324,9 @@ define([
                         alert(d.error + " " + d.message);
                     });
                     connector.on('account', function(d) {
-                        $scope.$apply(function(){
+                        $timeout(function(){
                             $scope.accountData = d;
-                        });
+                        }, 0);
                         //console.log("account data: ", $scope.accountData);
 
                         // prepare callback for multisig accounts
@@ -356,9 +355,9 @@ define([
 
                     connector.on('recenttransactions', function(d) {
                         d.data.reverse();
-                        $scope.$apply(function(){
+                        $timeout(function(){
                             $scope.transactions = d.data;
-                        });
+                        }, 0);
                         //console.log("recenttransactions data: ", d);
                     });
 
@@ -372,9 +371,9 @@ define([
                                 //console.log("OK, ", blockHeight, "removed tx: ", tx);
                             }
                         });
-                        $scope.$apply(function(){
+                        $timeout(function(){
                             $scope.transactions = cleanedTransactions;
-                        });
+                        }, 0);
                     });
                     connector.onConfirmed(confirmedCallback);
                     connector.onUnconfirmed(unconfirmedCallback);
