@@ -4,14 +4,14 @@ Lightwallet tech notes
 Lightwallet is a proof-of-concept wallet for NEM. Lightwallet implements signing of transactions,
 directly inside the browser from JS (using adjusted tweetnacl-js library).
 
-Lightwallet uses require.js, bootstrap and angular.
+Lightwallet uses require.js, bootstrap, and angular.
 
 The most important part is WalletController.
 Routes are very basic and are defined in walletApp.js.
 Any angular-objects, should include 'definitions', as a first element.
 
-The display of transactions is done using `<transaction>` directive.
-The directive uses proper `line*.html` view, basing on transaction type.
+The display of transactions is done using the `<transaction>` directive.
+The directive uses proper `line*.html` view, depending on the transaction type.
 
 Transaction's modal windows are done using angularUi and are currently handled 
 via proper `tx*.js` controllers and a corresponding `tx*.html` views.
@@ -28,7 +28,7 @@ The APIs start with `/w/api/` prefix. The APIs that require an address payload n
 {'account':'TDECM3D4JX4M2EIHMWP6PBWV4EBZY3TMAKOTO26J'}
 ```
 
-Subscribtion to data for specified address should by made by sending stomp message
+Subscription to data for a specified address should by made by sending stomp message
 either to `/w/api/account/get` or `/w/api/account/subscribe`with an address payload.
 
 Channels:
@@ -49,7 +49,7 @@ Channels:
  * `/account/get` (address payload) - does an initial subscribe, and requests account info (response send to `/account/<address>`) 
  * `/account/subscribe` (address payload) - only does initial subscribe
  
-Following apis are not required, but they are useful for obtaining initial state of given account.
+Following APIs are not required, but they are useful for obtaining the initial state of a given account.
  * `/account/transfers/all` (address payload) - requests recent BOTH confirmed and unconfirmed transactions for an account (response send to `/transactions/<address>` and `/unconfirmed/<address>`)
  * `/account/transfers/unconfirmed` (address payload) - requests unconfirmed transactions for an account (response send to `/unconfirmed/<address>`)
  * `/account/namespace/owned` (address payload) - requests namespaces owned by an account (response send to `/account/namespace/owned/<address>`)
