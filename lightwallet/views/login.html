@@ -29,7 +29,7 @@
                 <span ng-show="formnode.nodeAddress.$error.hostField">Invalid host name, valid format http://hostname:port (usually port is 7778)</span>
             </div>
             <div class="form-group">
-                <button type="submit" class="btn btn-default" ng-click="connect()" ng-disabled="! selectedHost && !customSelectedHost">
+                <button type="submit" class="btn btn-default" ng-click="connect()" ng-disabled="!selectedHost && !customSelectedHost">
                     Connect</button>
             </div>
         </div>
@@ -38,7 +38,8 @@
         <form class="form">
             <div ng-show="showAll && storageWallets">
                 <h3>Choose wallet:</h3>
-                    <div class="radio" ng-repeat="wallet in storageWallets | filter:filterNetwork" ng-class="{'bg-success':$parent.selectedWallet === wallet}">
+                    <div class="radio" ng-repeat="wallet in storageWallets | filter:filterNetwork track by wallet.accounts[0].address" ng-class="{'bg-success':$parent.selectedWallet === wallet}">
+						<!-- {{wallet}} -->
                         <label>
                             <!-- ng-repeat creates a scope, so we need a $parent here -->
                             <input type="radio" name="walletName" ng-model="$parent.selectedWallet" ng-value="wallet">
@@ -71,6 +72,9 @@
                 </label>
                 <label class="radio">
                     <input type="radio" ng-click="showAddPassWallet()" name="levyFeeType"> I want to create a brainwallet (password-based)
+                </label>
+                <label class="radio">
+					<input type="radio" ng-click="showAddImportNccWallet()" name="levyFeeType"> I want to import <strong>NCC</strong> wallet.
                 </label>
                 <label class="radio" ng-show="network === -104">
                     <input type="radio" ng-click="showTestnetButtons()" name="levyFeeType"> Show me all options avail in TESTnet
@@ -217,6 +221,37 @@
             </form>
             <div class="clearfix"></div>
         </div>
+
+		<div class="animated-layer" ng-hide="!showAll || addImportNccWalletHidden">
+            <form name="formpriv5">
+                <p>Wallet data is saved locally in your Local Storage <a href ng-click="localStorageHelpVisible=!localStorageHelpVisible">[learn more]</a>
+                    <a href="http://www.w3schools.com/html/html5_webstorage.asp" rel="nofollow">[external information]</a></p>
+                <p class="animated-layer" ng-show="localStorageHelpVisible">
+                    With local storage web applications can store data locally within the user's browser (if the browser supports this, which most recent browsers do). This might sound a little unsafe at first but don't worry. Every application has their own space in the Local Storage. No application can read another application's data. <br>
+                    Browsers can be configured (e.g. by add-ons) to clear the local storage at times. This will lead to the loss of those data and can't be undone easily. In our case your wallets would be gone so it is very important that you have your password / private-key ready if that occurs. By default browsers should not clear the local storage so if you haven't specifically configured your browser to do so you should be fine.
+				</p>
+
+				<div class="form-group">
+                    <label for="walletFile">Wallet json file:</label>
+                    <input type="file" class="form-control" ng-model="dummy.walletFile" name="walletFile" id="walletFile" nem-file-change="walletFileChanged">
+				</div>
+
+                <div class="form-group" ng-class="{'has-error':formpriv5.walletName.$error.walletNameField}">
+                    <label for="walletName">Wallet name:</label>
+                    <input disabled ng-model="dummy.name" class="form-control" id="walletName" name="walletName" wallet-name-field>
+                    <span ng-show="formpriv5.walletName.$error.walletNameField" class="text-danger"><span class="glyphicon glyphicon-exclamation-sign"></span>Empty wallet name or wallet with this name already exists</span>
+                </div>
+
+
+                <button type="submit" class="btn btn-default"
+                        ng-disabled="formpriv5.walletName.$error.walletNameField || formpriv5.walletFile.$error.walletFileField"
+                        ng-click="addNccWallet()">Import</button>
+
+                </p>
+
+			</form>
+            <div class="clearfix"></div>
+		</div>
     <!-- showWallets -->
     </div>
 </div>

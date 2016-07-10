@@ -18,7 +18,7 @@ define([
                 controller: 'LoginCtrl',
                 controllerAs: 'loginCtrl'
             })
-            .when('/wallet/:walletName', {
+            .when('/wallet/:walletName/:acct', {
                 templateUrl: 'views/wallet.html',
                 controller: 'WalletCtrl',
                 controllerAs: 'walletCtrl'
