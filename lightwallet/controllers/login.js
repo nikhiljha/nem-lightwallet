@@ -157,7 +157,7 @@ define([
         };
 
         $scope.walletLogin = function walletLogin(wallet) {
-            var redirectToWallet = function redirectToWallet() { $location.path('/wallet/' + wallet.name); };
+            var redirectToWallet = function redirectToWallet() { $location.path('/wallet/' + wallet.name + '/0'); };
             if ($scope.rememberMe) {
                 $scope.displayPasswordDialog(wallet, redirectToWallet);
             } else {
@@ -171,6 +171,7 @@ define([
         };
 
         $scope.addPrivatekeyWalletHidden = true;
+        $scope.addImportNccWalletHidden = true;
         $scope.addSaltedWalletHidden = true;
         $scope.addPassWalletHidden = true;
         $scope.addEncWalletHidden = true;
@@ -185,6 +186,7 @@ define([
 
         $scope.hideAll = function() {
             $scope.addPrivatekeyWalletHidden = true;
+			$scope.addImportNccWalletHidden = true;
             $scope.addSaltedWalletHidden = true;
             $scope.addPassWalletHidden = true;
             $scope.addEncWalletHidden = true;
@@ -198,6 +200,10 @@ define([
             $scope.hideAll();
             $scope.addPrivatekeyWalletHidden = false;
         };
+        $scope.showAddImportNccWallet = function() {
+            $scope.hideAll();
+            $scope.addImportNccWalletHidden = false;
+		}
         $scope.showAddSaltedWallet = function() {
             $scope.hideAll();
             $scope.addSaltedWalletHidden = false;
@@ -211,8 +217,7 @@ define([
             $scope.addEncWalletHidden = false;
         };
 
-        $scope.resetData = function resetData()
-        {
+        $scope.resetData = function resetData() {
             $scope.dummy = {'privatekey':''};
         };
         $scope.resetData();
@@ -303,7 +308,43 @@ define([
             $scope.resetData();
             $scope.hideAll();
         };
+
+		$scope.walletFileContent = null;
+		$scope.walletFileChanged = function walletFileChanged() {
+			var files = event.target.files;
+			// define reader
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				$scope.$apply(function() {
+					$scope.walletFileContent = JSON.parse(reader.result);
+                    if ($scope.walletFileContent.accounts && $scope.walletFileContent.accounts[0]) {
+                        $scope.dummy.name = $scope.walletFileContent.name;
+                    } else {
+                        $scope.dummy.name = undefined;
+                    }
+				});
+			};
+
+			var fileInput = document.getElementById('walletFile').files[0];
+			reader.readAsText(fileInput);
+		};
+
+        $scope.addNccWallet = function addNccWallet()
+        {
+			$scope.setWallets( $scope.storageWallets.concat( $scope.walletFileContent ) );
+            $scope.resetData();
+            $scope.hideAll();
+        };
     }]);
+
+	mod.directive('nemFileChange', function() {
+		return {
+			restrict: 'A',
+			link: function (scope, element, attrs) {
+				element.bind('change', scope.$eval(attrs.nemFileChange));
+			}
+		};
+	});
 
     mod.directive('hostField', function() {
         return {

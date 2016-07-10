@@ -41,8 +41,11 @@ define([
             $scope.storage = $window.localStorage;
             $scope.storage.setDefault('txTransferDefaults', {});
             var elem = $.grep($scope.storage.getObject('wallets'), function(w){ return w.name == $routeParams.walletName; });
+            var acctNo = parseInt($routeParams.acct, 10);
+            $scope.walletAccount = elem.length == 1 ? elem[0].accounts[acctNo] : null;
+            $scope.accounts = elem.length == 1 ? elem[0].accounts : null;
+            $scope.selectedAccount = {number: acctNo.toString() };
 
-            $scope.walletAccount = elem.length == 1 ? elem[0].accounts[0] : null;
             $scope.nisPort = sessionData.getNisPort();
             $scope.networkId = sessionData.getNetworkId();
             $scope.nisHeight = 0;
@@ -51,6 +54,10 @@ define([
             $scope.activeWalletTab = 0;
             $scope.setWalletTab = function setWalletTab(index) {
                 $scope.activeWalletTab = index;
+            };
+
+            $scope.switchToWalletAccount = function switchToWalletAccount() {
+                $location.path('/wallet/' + elem[0].name + '/' + $scope.selectedAccount.number);
             };
 
             function mosaicIdToName(mosaicId) {
@@ -253,7 +260,7 @@ define([
             // if we got wallet name let's set up everything...
             if (elem.length == 1) {
                 $scope.name = elem[0].name;
-                $scope.account = elem[0].accounts[0].address;
+                $scope.account = elem[0].accounts[acctNo].address;
                 $scope.connectionStatus = "connecting";
 
                 var _uriParser = document.createElement('a');
@@ -262,7 +269,7 @@ define([
                     $scope.nisHeight = data.height;
                 });
 
-                var connector = Connector(sessionData.getNode(), elem[0].accounts[0].address);
+                var connector = Connector(sessionData.getNode(), elem[0].accounts[acctNo].address);
                 connector.connect(function(){
                     $timeout(function(){
                         $scope.connectionStatus = "connected";
@@ -437,16 +444,16 @@ define([
                 if (scope.d.transaction.type === 4100) {
                     scope.tx = scope.d.transaction.otherTrans;
                     scope.meta = scope.d.meta;
-                    scope.parent = scope.d.transaction;
+                    scope.parentTx = scope.d.transaction;
                 } else {
                     scope.tx = scope.d.transaction;
                     scope.meta = scope.d.meta;
-                    scope.parent = undefined;
+                    scope.parentTx = undefined;
                 }
 
                 scope.confirmed = !(scope.meta.height === Number.MAX_SAFE_INTEGER);
                 // if multisig and not confirmed, check if we need to cosign
-                scope.needsSignature = scope.parent && !scope.confirmed && scope.accountData && needsSignature(scope.d, scope.accountData);
+                scope.needsSignature = scope.parentTx && !scope.confirmed && scope.accountData && needsSignature(scope.d, scope.accountData);
                 scope.templateName = txTypeToName(scope.tx.type);
                 scope.templateUri = 'views/line'+scope.templateName+'.html';
 
