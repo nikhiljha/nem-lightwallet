@@ -54,11 +54,9 @@ define([
                 self.stompClient = Stomp.over(self.socket);
                 self.stompClient.debug = undefined;
                 self.stompClient.connect({}, function(frame) {
-                    if (undefined !== asyncConnectCb) {
-                        asyncConnectCb();
-                    }
+                    if (asyncConnectCb) asyncConnectCb();
                 }, function() {
-                    // this will reconnect on failure, but will keep trying even when it shouldn't (e.g. server dies)
+                    // This will reconnect on failure, but will keep trying even when it shouldn't (e.g. server dies)
                     clearTimeout(self.timeoutHandle);
                     self.connect();
                 });
